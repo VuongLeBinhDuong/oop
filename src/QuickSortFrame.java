@@ -1,10 +1,15 @@
-
+package test2;
 
 import java.awt.EventQueue;
 
 public class QuickSortFrame extends SortFrame {
 
-    public QuickSortFrame() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public QuickSortFrame() {
         super("Quick Sort Algorithm Visualizer");
         initializeButtonPanel();
     }
@@ -27,10 +32,6 @@ public class QuickSortFrame extends SortFrame {
                 visualizer.quickSort();
                 break;
             case 2: // back button
-                getContentPane().removeAll();
-                getContentPane().repaint();
-                new MainMenu();
-                setVisible(false);
                 break;
         }
     }

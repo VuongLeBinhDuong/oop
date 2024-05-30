@@ -1,3 +1,4 @@
+package test2;
 import javax.swing.JOptionPane;
 import java.awt.image.BufferStrategy;
 import java.awt.Color;
@@ -25,6 +26,10 @@ public class Visualizer
 	private Graphics g;
 
 	private SortedListener listener;
+	private boolean isPaused = false;
+	protected int stopFlag = 0;
+	protected int check = 0;
+	
 
 	public Visualizer(int capacity, int fps, SortedListener listener)
 	{
@@ -85,65 +90,74 @@ public class Visualizer
 	// return a color for a bar
 	private Color getBarColor(int value)
 	{
-		int interval = (int) (array.length / 5.0);
-		if (value < interval)
-			return ColorManager.BAR_ORANGE;
-		else if (value < interval * 2)
-			return ColorManager.BAR_YELLOW;
-		else if (value < interval * 3)
-			return ColorManager.BAR_GREEN;
-		else if (value < interval * 4)
-			return ColorManager.BAR_CYAN;
+
 		return ColorManager.BAR_BLUE;
 
 	}
 
 
 	/* BUBBLE SORT */
-	public void bubbleSort()
-	{
-		if (!isCreated())
-			return;
+	public void bubbleSort() throws InterruptedException {
+	    if (!isCreated()) return;
 
-		// get graphics
-        g = bs.getDrawGraphics();
+	    // get graphics
+	    g = bs.getDrawGraphics();
 
-		// calculate elapsed time
-		startTime = System.nanoTime();
-		Sort.bubbleSort(array.clone());
-		time = System.nanoTime() - startTime;
+	    // calculate elapsed time
+	    startTime = System.nanoTime();
+	    Sort.bubbleSort(array.clone());
+	    time = System.nanoTime() - startTime;
 
-		comp = swapping = 0;
-		int count = 0;
-		for (int i = array.length-1; i >= 0; i--)
-		{
-			count = 0;
-			for (int j = 0; j < i; j++)
-			{
-				colorPair(j, j+1, comparingColor);
+	    comp = swapping = 0;
+	    int count = 0;
+	    for (int i = array.length - 1; i >= 0; i--) {
+	        count = 0;
+	        for (int j = 0; j < i; j++) {
+	            colorPair(j, j + 1, comparingColor);
 
-				if (array[j] > array[j+1])
-				{
-					swap(j, j+1);
-					count++;
-					swapping++;
-				}
+	            if (array[j] > array[j + 1]) {
+	                swap(j, j + 1);
+	                count++;
+	                swapping++;
+	            }
 
-				comp++;
-			}
+	            comp++;  // Check for pause
+	            if (stopFlag == 1) {
+	                handlePause();
+	            } 
+	        }
 
-			bars[i].setColor(getBarColor(i));
-			bars[i].draw(g);
-			bs.show();
+	        bars[i].setColor(getBarColor(i));
+	        bars[i].draw(g);
+	        bs.show();
 
-			if (count == 0)  // the array is sorted
-				break;
-		}
+	        if (count == 0)  // the array is sorted
+	            break;
+	    }
+	    finishAnimation();
 
-		finishAnimation();
-
-		g.dispose();
+	    g.dispose();
 	}
+	
+	private synchronized void handlePause() throws InterruptedException {
+                wait();
+                redrawBars();  // Redraw bars immediately after resuming
+    }
+
+    public synchronized void pause() {
+        isPaused = true;
+    }
+
+    public synchronized void resume() {
+        notifyAll();
+    }
+    
+    private void redrawBars() {
+        for (int i = 0; i < bars.length; i++) {
+            bars[i].draw(g);
+        }
+        bs.show();
+    }
 
 
 	/* SELECTION SORT */
@@ -189,6 +203,8 @@ public class Visualizer
 
 		g.dispose();
 	}
+	
+	
 
 
 	/* INSERTION SORT */

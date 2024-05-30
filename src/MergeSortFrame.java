@@ -1,9 +1,15 @@
+package test2;
 
 import java.awt.EventQueue;
 
 public class MergeSortFrame extends SortFrame {
 
-    public MergeSortFrame() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public MergeSortFrame() {
         super("Merge Sort Algorithm Visualizer");
         initializeButtonPanel();
     }
@@ -26,10 +32,6 @@ public class MergeSortFrame extends SortFrame {
                 visualizer.mergeSort();
                 break;
             case 2: // back button
-                getContentPane().removeAll();
-                getContentPane().repaint();
-                new MainMenu();
-                setVisible(false);
                 break;
         }
     }
