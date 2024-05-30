@@ -1,9 +1,15 @@
+package test2;
 
 import java.awt.EventQueue;
 
 public class SelectionSortFrame extends SortFrame {
 
-    public SelectionSortFrame() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public SelectionSortFrame() {
         super("Selection Sort Algorithm Visualizer");
         initializeButtonPanel();
     }
@@ -26,10 +32,6 @@ public class SelectionSortFrame extends SortFrame {
                 visualizer.selectionSort();
                 break;
             case 2: // back button
-                getContentPane().removeAll();
-                getContentPane().repaint();
-                new MainMenu();
-                setVisible(false);
                 break;
         }
     }

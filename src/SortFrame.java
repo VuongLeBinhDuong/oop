@@ -1,11 +1,9 @@
+package test2;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -15,8 +13,12 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         ChangeListener, Visualizer.SortedListener,
         ButtonPanel.SortButtonListener, MyCanvas.VisualizerProvider {
 
-    private static final int WIDTH = 1680;
-	protected static final int HEIGHT = 1000;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final int WIDTH = 1280;
+	protected static final int HEIGHT = 720;
     private static final int CAPACITY = 50, FPS = 100;
 
     protected JPanel mainPanel, inputPanel, sliderPanel, inforPanel;
@@ -29,44 +31,18 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
 
     public SortFrame(String title) {
         super(title);
-        Container cp = getContentPane();
-        cp.setLayout(new BorderLayout());
-        this.mainPanel = initialize();
-        cp.add(mainPanel, BorderLayout.CENTER);
-
-        setSize(800, 600);
-
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setMaximumSize(new Dimension(WIDTH, HEIGHT + 200));
+        setMinimumSize(new Dimension(WIDTH, HEIGHT + 20));
+        setPreferredSize(new Dimension(WIDTH, HEIGHT + 20));
         setLocationRelativeTo(null);
         setResizable(false);
-        setBackground(Color.WHITE);
-        setLocationRelativeTo(null);
-        setVisible(true);
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // Prevent default close operation
+        setBackground(ColorManager.BACKGROUND);
 
-        // Add a WindowListener to handle the close operation
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION);
-                if (choice == JOptionPane.YES_OPTION) {
-                    System.exit(0);
-                } else {
-                    // Clear all components and recreate a new MainMenu instance
-                    getContentPane().removeAll();
-                    getContentPane().repaint();
-                    new MainMenu();
-                }
-            }
-        });
-
-        // Enter fullscreen mode
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        if (gd.isFullScreenSupported()) {
-            gd.setFullScreenWindow(this);
-        }
+        initialize();
     }
 
-    protected JPanel initialize() {
+    protected void initialize() {
         mainPanel = new JPanel();
         mainPanel.setLayout(null);
         mainPanel.setBackground(ColorManager.BACKGROUND);
@@ -78,7 +54,6 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         initializeInputPanel();
         initializeSliderPanel();
         initializeInforPanel();
-        return mainPanel;
     }
 
     protected void initializeButtonPanel() {
@@ -124,7 +99,7 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         capacityField.setColumns(3);
         capacityField.setFont(new Font(null, Font.PLAIN, 15));
         capacityField.setForeground(ColorManager.TEXT);
-        capacityField.setBackground(ColorManager.BACKGROUND);
+        capacityField.setBackground(ColorManager.CANVAS_BACKGROUND);
         capacityField.setCaretColor(ColorManager.BAR_YELLOW);
         capacityField.setBorder(BorderFactory.createLineBorder(ColorManager.FIELD_BORDER, 1));
         capacityField.addPropertyChangeListener("value", this);
