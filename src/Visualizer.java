@@ -1,4 +1,4 @@
-package test2;
+
 import javax.swing.JOptionPane;
 import java.awt.image.BufferStrategy;
 import java.awt.Color;

@@ -1,4 +1,4 @@
-package test2;
+
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
@@ -48,25 +48,25 @@ public class ButtonPanel extends JPanel
 
 	private void initButtons(JLabel button, String name, int id)
 	{
-		button.setIcon(new ImageIcon(String.format("buttons/%s.png", name)));
+		button.setIcon(new ImageIcon(String.format("./src/buttons/%s.png", name)));
 		button.addMouseListener(new MouseListener() {
 			public void mouseClicked(MouseEvent e) {}
 
 			public void mouseEntered(MouseEvent e) {
-				button.setIcon(new ImageIcon(String.format("buttons/%s_entered.png", name)));
+				button.setIcon(new ImageIcon(String.format("./src/buttons/%s_entered.png", name)));
 			}
 
 			public void mouseExited(MouseEvent e) {
-				button.setIcon(new ImageIcon(String.format("buttons/%s.png", name)));
+				button.setIcon(new ImageIcon(String.format("./src/buttons/%s.png", name)));
 			}
 
 			public void mousePressed(MouseEvent e) {
-				button.setIcon(new ImageIcon(String.format("buttons/%s_pressed.png", name)));
+				button.setIcon(new ImageIcon(String.format("./src/buttons/%s_pressed.png", name)));
 			}
 
 			public void mouseReleased(MouseEvent e) {
 				listener.sortButtonClicked(id);
-				button.setIcon(new ImageIcon(String.format("buttons/%s_entered.png", name)));
+				button.setIcon(new ImageIcon(String.format("./src/buttons/%s_entered.png", name)));
 			}
 		});
 	}
