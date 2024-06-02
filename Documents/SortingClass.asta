@@ -1,0 +1,132 @@
+@startuml
+
+class SortFrame {
+    +SortFrame(String title)
+}
+
+SortFrame ..|> JFrame
+
+MainMenu *-- SortFrame
+SortFrame *-- Visualizer
+SortFrame *-- ButtonPanel
+
+class MainMenu {
+    -JButton mergeSortButton
+    -JButton bubbleSortButton
+    -JButton insertionSortButton
+    +MainMenu(JFrame frame)
+}
+
+MainMenu ..|> JPanel
+
+class MergeSortFrame {
+    +MergeSortFrame()
+}
+
+MergeSortFrame ..|> SortFrame
+
+class Bar {
+    -int value
+    -int x
+    -int y
+    -int width
+    -int height
+    -Color color
+    +Bar(int value, int x, int y, int width, int height, Color color)
+    +draw(Graphics g)
+    +getValue() : int
+    +setValue(int value)
+    +getX() : int
+    +setX(int x)
+    +getY() : int
+    +setY(int y)
+    +getWidth() : int
+    +setWidth(int width)
+    +getHeight() : int
+    +setHeight(int height)
+    +getColor() : Color
+    +setColor(Color color)
+}
+
+class BubbleSortFrame {
+    +BubbleSortFrame()
+}
+
+BubbleSortFrame ..|> SortFrame
+
+class ButtonPanel {
+    -JButton startButton
+    -JButton resetButton
+    +ButtonPanel()
+    +getStartButton() : JButton
+    +getResetButton() : JButton
+}
+
+ButtonPanel ..|> JPanel
+
+class ColorManager {
+    {static} +BAR_COLOR : Color
+    {static} +BACKGROUND_COLOR : Color
+    {static} +BORDER_COLOR : Color
+    {static} +getBarColor() : Color
+    {static} +getBackgroundColor() : Color
+    {static} +getBorderColor() : Color
+}
+
+class InsertionSortFrame {
+    +InsertionSortFrame()
+}
+
+InsertionSortFrame ..|> SortFrame
+
+class Visualizer {
+    -MyCanvas canvas
+    +Visualizer()
+}
+
+Visualizer ..|> JFrame
+Visualizer *-- MyCanvas
+
+class MyCanvas {
+    -int[] array
+    +MyCanvas()
+    +updateArray(int[] newArray)
+}
+
+MyCanvas ..|> JPanel
+
+class MyFormatter {
+    +format(LogRecord record) : String
+}
+
+MyFormatter ..|> NumberFormatter
+
+class QuickSortFrame {
+    +QuickSortFrame()
+}
+
+QuickSortFrame ..|> SortFrame
+
+class SelectionSortFrame {
+    +SelectionSortFrame()
+}
+
+SelectionSortFrame ..|> SortFrame
+
+class Sort {
+    {static} +bubbleSort(int[] array)
+    {static} +insertionSort(int[] array)
+    {static} +mergeSort(int[] array, int left, int right)
+    {static} +quickSort(int[] array, int low, int high)
+    {static} +selectionSort(int[] array)
+    {static} -merge(int[] array, int left, int mid, int right)
+    {static} -partition(int[] array, int low, int high)
+}
+
+class ShellSortFrame {
+    +ShellSortFrame()
+}
+
+ShellSortFrame ..|> SortFrame
+
+@enduml
