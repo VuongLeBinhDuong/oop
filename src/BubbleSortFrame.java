@@ -1,13 +1,18 @@
 
-
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BubbleSortFrame extends SortFrame {
 
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<Thread> threads;
-
+	
+	
+	
 	class RunThread extends Thread {
 		public void run() {
 			try {
@@ -41,11 +46,20 @@ public class BubbleSortFrame extends SortFrame {
         }
     }
 
+
 	public BubbleSortFrame() {
         super("Bubble Sort Algorithm Visualizer");
         threads = new ArrayList<>();
         initializeButtonPanel();
     }
+
+//    @Override
+//    protected void initializeButtonPanel() {
+//        buttonPanel = new ButtonPanel(this, "bubble");
+//        buttonPanel.setBounds(0, 150, 250, HEIGHT);
+//        buttonPanel.setBackground(ColorManager.BACKGROUND);
+//        mainPanel.add(buttonPanel);
+//    }
 
     @Override
     public void sortButtonClicked(int id) {
@@ -60,9 +74,6 @@ public class BubbleSortFrame extends SortFrame {
                 threads.add(runThread);
                 break;
             case 2:  // back button
-                getContentPane().removeAll();
-                getContentPane().repaint();
-                setVisible(false);
                 new MainMenu();
                 break;
             case 3:  // stop button

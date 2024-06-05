@@ -14,6 +14,14 @@ public class MergeSortFrame extends SortFrame {
         initializeButtonPanel();
     }
 
+//    @Override
+//    protected void initializeButtonPanel() {
+//        buttonPanel = new ButtonPanel(this, "merge");
+//        buttonPanel.setBounds(0, 150, 250, HEIGHT);
+//        buttonPanel.setBackground(ColorManager.BACKGROUND);
+//        mainPanel.add(buttonPanel);
+//    }
+
     @Override
     public void sortButtonClicked(int id) {
         switch (id) {
@@ -24,10 +32,6 @@ public class MergeSortFrame extends SortFrame {
                 visualizer.mergeSort();
                 break;
             case 2: // back button
-                getContentPane().removeAll();
-                getContentPane().repaint();
-                setVisible(false);
-                new MainMenu();
                 break;
         }
     }
