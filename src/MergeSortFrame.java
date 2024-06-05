@@ -14,13 +14,27 @@ public class MergeSortFrame extends SortFrame {
         initializeButtonPanel();
     }
 
-//    @Override
-//    protected void initializeButtonPanel() {
-//        buttonPanel = new ButtonPanel(this, "merge");
-//        buttonPanel.setBounds(0, 150, 250, HEIGHT);
-//        buttonPanel.setBackground(ColorManager.BACKGROUND);
-//        mainPanel.add(buttonPanel);
-//    }
+    class RunThread extends Thread {
+        public void run() {
+            try {
+                visualizer.mergeSort();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    class StopThread extends Thread {
+        public void run() {
+            visualizer.pauseSelection();
+        }
+    }
+
+    class ContinueThread extends Thread {
+        public void run() {
+            visualizer.resumeSelection();
+        }
+    }
 
     @Override
     public void sortButtonClicked(int id) {
@@ -29,9 +43,19 @@ public class MergeSortFrame extends SortFrame {
                 visualizer.createRandomArray(canvas.getWidth(), canvas.getHeight());
                 break;
             case 1:  // sort button
-                visualizer.mergeSort();
+                RunThread runThread = new RunThread();
+                runThread.start();
                 break;
-            case 2: // back button
+            case 2:  // back button
+                new MainMenu();
+                break;
+            case 3:  // stop button
+                StopThread stopThread = new StopThread();
+                stopThread.start();
+                break;
+            case 4:  // continue button
+                ContinueThread continueThread = new ContinueThread();
+                continueThread.start();
                 break;
         }
     }
