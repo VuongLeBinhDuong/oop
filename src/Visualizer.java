@@ -38,7 +38,7 @@ public class Visualizer
 		this.listener = listener;
 		startTime = time = comp = swapping = 0;
 
-		originalColor = ColorManager.BAR_WHITE;
+		originalColor = ColorManager.BAR_CYAN;
 		comparingColor = Color.YELLOW;
 		swappingColor = ColorManager.BAR_RED;
 
@@ -203,8 +203,6 @@ public class Visualizer
 
 		g.dispose();
 	}
-	
-	
 
 
 	/* INSERTION SORT */
@@ -564,6 +562,52 @@ public class Visualizer
 		}
 
 		bs.show();
+		g.dispose();
+	}
+
+	/* SHELL SORT */
+	public void shellSort() throws InterruptedException {
+		if (!isCreated()) return;
+
+		g = bs.getDrawGraphics();
+
+		startTime = System.nanoTime();
+		Sort.shellSort(array.clone());
+		time = System.nanoTime() - startTime;
+
+		comp = swapping = 0;
+
+		int n = array.length;
+
+		for (int gap = n / 2; gap > 0; gap /= 2) {
+			for (int i = gap; i < n; i++) {
+				int temp = array[i];
+				int j;
+				for (j = i; j >= gap && array[j - gap] > temp; j -= gap) {
+					colorPair(j, j - gap, comparingColor);
+
+					array[j] = array[j - gap];
+					bars[j].clear(g);
+					bars[j].setValue(bars[j - gap].getValue());
+					colorBar(j, swappingColor);
+
+					swapping++;
+					comp++;
+				}
+				array[j] = temp;
+				bars[j].clear(g);
+				bars[j].setValue(temp);
+				bars[j].setColor(getBarColor(j));
+				bars[j].draw(g);
+
+				if (stopFlag == 1) {
+					handlePause();
+				}
+				bs.show();
+			}
+		}
+
+		finishAnimation();
 		g.dispose();
 	}
 

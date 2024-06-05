@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -17,8 +19,8 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final int WIDTH = 1280;
-	protected static final int HEIGHT = 720;
+	private static final int WIDTH = 1600;
+	protected static final int HEIGHT = 1000;
     private static final int CAPACITY = 50, FPS = 100;
 
     protected JPanel mainPanel, inputPanel, sliderPanel, inforPanel;
@@ -29,20 +31,47 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
     protected MyCanvas canvas;
     protected Visualizer visualizer;
 
+
     public SortFrame(String title) {
         super(title);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMaximumSize(new Dimension(WIDTH, HEIGHT + 200));
-        setMinimumSize(new Dimension(WIDTH, HEIGHT + 20));
-        setPreferredSize(new Dimension(WIDTH, HEIGHT + 20));
+        Container cp = getContentPane();
+        cp.setLayout(new BorderLayout());
+        this.mainPanel = initialize();
+        cp.add(mainPanel, BorderLayout.CENTER);
+
+        setSize(800, 600);
+
         setLocationRelativeTo(null);
         setResizable(false);
-        setBackground(ColorManager.BACKGROUND);
+        setBackground(Color.WHITE);
+        setLocationRelativeTo(null);
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // Prevent default close operation
 
-        initialize();
+        // Add a WindowListener to handle the close operation
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION);
+                if (choice == JOptionPane.YES_OPTION) {
+                    System.exit(0);
+                } else {
+                    // Clear all components and recreate a new MainMenu instance
+                    getContentPane().removeAll();
+                    getContentPane().repaint();
+                    new MainMenu();
+                }
+            }
+        });
+
+        // Enter fullscreen mode
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        if (gd.isFullScreenSupported()) {
+            gd.setFullScreenWindow(this);
+        }
     }
 
-    protected void initialize() {
+    protected JPanel initialize() {
         mainPanel = new JPanel();
         mainPanel.setLayout(null);
         mainPanel.setBackground(ColorManager.BACKGROUND);
@@ -54,24 +83,25 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         initializeInputPanel();
         initializeSliderPanel();
         initializeInforPanel();
+        return mainPanel;
     }
 
     protected void initializeButtonPanel() {
-        buttonPanel = new ButtonPanel(this, "quick");
-        buttonPanel.setBounds(0, 150, 250, HEIGHT);
-        buttonPanel.setBackground(ColorManager.BACKGROUND);
+        buttonPanel = new ButtonPanel(this, "bubble");
+        buttonPanel.setBounds(20, 400, 300, HEIGHT);
+        buttonPanel.setBackground(Color.BLACK);
         mainPanel.add(buttonPanel);
     }
 
     protected void initializeCanvas() {
         canvas = new MyCanvas(this);
-        int cWidth = WIDTH - 250 - 10;
-        int cHeight = HEIGHT - 80;
+        int cWidth = WIDTH - 300;
+        int cHeight = HEIGHT - 100;
         canvas.setFocusable(false);
         canvas.setMaximumSize(new Dimension(cWidth, cHeight));
         canvas.setMinimumSize(new Dimension(cWidth, cHeight));
         canvas.setPreferredSize(new Dimension(cWidth, cHeight));
-        canvas.setBounds(250, 60, cWidth, cHeight);
+        canvas.setBounds(350, 100, cWidth, cHeight);
         mainPanel.add(canvas);
         pack();
     }
@@ -117,8 +147,9 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
     protected void initializeSliderPanel() {
         fpsLabel = new JLabel("Frames Per Second");
         fpsLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-        fpsLabel.setFont(new Font(null, Font.BOLD, 15));
+        fpsLabel.setFont(new Font("Arial", Font.BOLD, 15));
         fpsLabel.setForeground(ColorManager.TEXT);
+        fpsLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         fpsSlider = new JSlider(JSlider.HORIZONTAL, 50, 350, FPS);
         fpsSlider.setMajorTickSpacing(100);
@@ -127,30 +158,41 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         fpsSlider.setPaintLabels(true);
         fpsSlider.setPaintTrack(true);
         fpsSlider.setForeground(ColorManager.TEXT);
+        fpsSlider.setBackground(ColorManager.BACKGROUND);
+        fpsSlider.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(ColorManager.FIELD_BORDER, 1),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         fpsSlider.addChangeListener(this);
+
+        // Create a custom label formatter for better appearance
+        fpsSlider.setLabelTable(fpsSlider.createStandardLabels(100));
+        fpsSlider.setFont(new Font("Arial", Font.PLAIN, 12));
 
         sliderPanel = new JPanel();
         sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.Y_AXIS));
         sliderPanel.setBackground(ColorManager.BACKGROUND);
+        sliderPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
         sliderPanel.add(fpsLabel);
+        sliderPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add spacing between label and slider
         sliderPanel.add(fpsSlider);
 
-        sliderPanel.setBounds(10, 80, 220, 100);
+        sliderPanel.setBounds(10, 80, 240, 150); // Increase height for better spacing
         mainPanel.add(sliderPanel);
     }
 
+
     protected void initializeInforPanel() {
         timeLabel = new JLabel("Elapsed Time: 0 µs");
-        timeLabel.setFont(new Font(null, Font.PLAIN, 15));
-        timeLabel.setForeground(ColorManager.TEXT_RED);
+        timeLabel.setFont(new Font(null, Font.PLAIN, 20));
+        timeLabel.setForeground(ColorManager.TEXT_GREEN);
 
         compLabel = new JLabel("Comparisons: 0");
-        compLabel.setFont(new Font(null, Font.PLAIN, 15));
-        compLabel.setForeground(ColorManager.TEXT_YELLOW);
+        compLabel.setFont(new Font(null, Font.PLAIN, 20));
+        compLabel.setForeground(ColorManager.TEXT_RED);
 
         swapLabel = new JLabel("Swaps: 0");
-        swapLabel.setFont(new Font(null, Font.PLAIN, 15));
-        swapLabel.setForeground(ColorManager.TEXT_GREEN);
+        swapLabel.setFont(new Font(null, Font.PLAIN, 20));
+        swapLabel.setForeground(ColorManager.TEXT_YELLOW);
 
         inforPanel = new JPanel(new GridLayout(1, 0));
         inforPanel.setAlignmentX(JPanel.CENTER_ALIGNMENT);
@@ -158,7 +200,7 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         inforPanel.add(compLabel);
         inforPanel.add(swapLabel);
         inforPanel.setBackground(ColorManager.BACKGROUND);
-        inforPanel.setBounds(410, 20, 800, 30);
+        inforPanel.setBounds(700, 30, 800, 30);
         mainPanel.add(inforPanel);
     }
 

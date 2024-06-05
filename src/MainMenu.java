@@ -180,7 +180,7 @@ public class MainMenu extends JFrame {
                             setVisible(false); // Hide the main menu
                             break;
                         case "Shell":
-                            //new ShellSortFrame().setVisible(true);
+                            new ShellSortFrame().setVisible(true);
                             setVisible(false); // Hide the main menu
                             break;
                         default:
@@ -540,6 +540,12 @@ public class MainMenu extends JFrame {
 
         // Create a scroll pane for the entire content panel
         JScrollPane mainScrollPane = new JScrollPane(contentPanel);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                mainScrollPane.getViewport().setViewPosition( new Point(0, 0) );
+            }
+        });
         mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         mainScrollPane.setBackground(Color.WHITE); // Set background color of the main scroll pane
 
@@ -549,8 +555,6 @@ public class MainMenu extends JFrame {
         center.revalidate(); // Revalidate the center panel
         center.repaint(); // Repaint the center panel
 
-        // Scroll to the top
-        mainScrollPane.getVerticalScrollBar().setValue(0);
     }
 
 
@@ -844,6 +848,12 @@ public class MainMenu extends JFrame {
 
         // Create a scroll pane for the entire content panel
         JScrollPane mainScrollPane = new JScrollPane(contentPanel);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                mainScrollPane.getViewport().setViewPosition( new Point(0, 0) );
+            }
+        });
         mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         mainScrollPane.setBackground(Color.WHITE); // Set background color of the main scroll pane
 
@@ -952,6 +962,12 @@ public class MainMenu extends JFrame {
 
         // Create a scroll pane for the entire content panel
         JScrollPane mainScrollPane = new JScrollPane(contentPanel);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                mainScrollPane.getViewport().setViewPosition( new Point(0, 0) );
+            }
+        });
         mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         mainScrollPane.setBackground(Color.WHITE); // Set background color of the main scroll pane
 
@@ -1187,6 +1203,12 @@ public class MainMenu extends JFrame {
 
         // Create a scroll pane for the entire content panel
         JScrollPane mainScrollPane = new JScrollPane(contentPanel);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                mainScrollPane.getViewport().setViewPosition( new Point(0, 0) );
+            }
+        });
         mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         mainScrollPane.setBackground(Color.WHITE); // Set background color of the main scroll pane
 
@@ -1195,8 +1217,7 @@ public class MainMenu extends JFrame {
 
         center.revalidate(); // Revalidate the center panel
         center.repaint(); // Repaint the center panel
-        // Scroll to the top
-        mainScrollPane.getVerticalScrollBar().setValue(0);
+
     }
 
     public void shellSortInformation() {
@@ -1312,6 +1333,12 @@ public class MainMenu extends JFrame {
 
         // Create a scroll pane for the entire content panel
         JScrollPane mainScrollPane = new JScrollPane(contentPanel);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                mainScrollPane.getViewport().setViewPosition( new Point(0, 0) );
+            }
+        });
         mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         mainScrollPane.setBackground(Color.WHITE); // Set background color of the main scroll pane
 
@@ -1321,8 +1348,6 @@ public class MainMenu extends JFrame {
         center.revalidate(); // Revalidate the center panel
         center.repaint(); // Repaint the center panel
 
-        // Scroll to the top
-        mainScrollPane.getVerticalScrollBar().setValue(0);
     }
 
 

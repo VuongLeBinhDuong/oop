@@ -2,7 +2,7 @@ import java.awt.Color;
 
 public class ColorManager {
 	public static Color BACKGROUND = Color.WHITE; // White background
-	public static Color CANVAS_BACKGROUND = new Color(90, 90, 90); // Brighter canvas background
+	public static Color CANVAS_BACKGROUND = new Color(250, 250, 250); // Brighter canvas background
 	public static Color BAR_WHITE = new Color(230, 230, 230); // Brighter white
 	public static Color BAR_BLUE = new Color(120, 180, 255); // Brighter blue
 	public static Color BAR_CYAN = new Color(100, 220, 240); // Brighter cyan

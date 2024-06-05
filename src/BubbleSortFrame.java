@@ -75,6 +75,9 @@ public class BubbleSortFrame extends SortFrame {
                 threads.add(runThread);
                 break;
             case 2:  // back button
+                getContentPane().removeAll();
+                getContentPane().repaint();
+                setVisible(false);
                 new MainMenu();
                 break;
             case 3:  // stop button

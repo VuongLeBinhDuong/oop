@@ -2,21 +2,21 @@
 
 import java.awt.EventQueue;
 
-public class InsertionSortFrame extends SortFrame {
+public class ShellSortFrame extends SortFrame {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public InsertionSortFrame() {
-        super("Insertion Sort Algorithm Visualizer");
+    public ShellSortFrame() {
+        super("Shell Sort Algorithm Visualizer");
         initializeButtonPanel();
     }
 
     @Override
     protected void initializeButtonPanel() {
-        buttonPanel = new ButtonPanel(this, "insertion");
+        buttonPanel = new ButtonPanel(this, "shell");
         buttonPanel.setBounds(0, 150, 250, HEIGHT);
         buttonPanel.setBackground(ColorManager.BACKGROUND);
         mainPanel.add(buttonPanel);
@@ -29,9 +29,17 @@ public class InsertionSortFrame extends SortFrame {
                 visualizer.createRandomArray(canvas.getWidth(), canvas.getHeight());
                 break;
             case 1:  // sort button
-                visualizer.insertionSort();
+                try {
+                    visualizer.shellSort();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case 2: // back button
+                getContentPane().removeAll();
+                getContentPane().repaint();
+                setVisible(false);
+                new MainMenu();
                 break;
         }
     }
@@ -39,7 +47,7 @@ public class InsertionSortFrame extends SortFrame {
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new InsertionSortFrame().setVisible(true);
+                new ShellSortFrame().setVisible(true);
             }
         });
     }

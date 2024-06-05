@@ -175,5 +175,23 @@ public class Sort
 		data[element2] = data[element1];
 		data[element1] = temp;
 	}
+
+	public static <T extends Comparable<T>> void shellSort(T[] data) {
+		int n = data.length;
+
+		// Khởi tạo khoảng cách ban đầu
+		for (int gap = n / 2; gap > 0; gap /= 2) {
+			// Sắp xếp các phần tử cách nhau 'gap' khoảng cách
+			for (int i = gap; i < n; i++) {
+				T temp = data[i];
+				int j;
+				for (j = i; j >= gap && data[j - gap].compareTo(temp) > 0; j -= gap) {
+					data[j] = data[j - gap];
+				}
+				data[j] = temp;
+			}
+		}
+	}
+
 }
 
