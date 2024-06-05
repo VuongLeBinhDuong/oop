@@ -15,14 +15,6 @@ public class SelectionSortFrame extends SortFrame {
     }
 
     @Override
-    protected void initializeButtonPanel() {
-        buttonPanel = new ButtonPanel(this, "selection");
-        buttonPanel.setBounds(0, 150, 250, HEIGHT);
-        buttonPanel.setBackground(ColorManager.BACKGROUND);
-        mainPanel.add(buttonPanel);
-    }
-
-    @Override
     public void sortButtonClicked(int id) {
         switch (id) {
             case 0:  // create button
@@ -32,6 +24,10 @@ public class SelectionSortFrame extends SortFrame {
                 visualizer.selectionSort();
                 break;
             case 2: // back button
+                getContentPane().removeAll();
+                getContentPane().repaint();
+                setVisible(false);
+                new MainMenu();
                 break;
         }
     }

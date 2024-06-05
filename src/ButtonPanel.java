@@ -13,7 +13,7 @@ public class ButtonPanel extends JPanel
 	private SortButtonListener listener;
 	private int number = 5;
 
-	public ButtonPanel(SortButtonListener listener, String sort_type)
+	public ButtonPanel(SortButtonListener listener)
 	{
 		super();
 
@@ -25,12 +25,13 @@ public class ButtonPanel extends JPanel
 
 		initButtons(buttons[0], "create_button", 0);
 
-		if (sort_type.equals("bubble")) initButtons(buttons[1], "bubble_sort_button", 1);
-		else if (sort_type.equals("selection")) initButtons(buttons[1], "selection_button", 1);
-		else if (sort_type.equals("merge")) initButtons(buttons[1], "merge_button", 1);
-		else if (sort_type.equals("quick")) initButtons(buttons[1], "quick_button", 1);
-		else if (sort_type.equals("insertion")) initButtons(buttons[1], "insertion_button", 1);
-		else if (sort_type.equals("shell")) initButtons(buttons[1], "shell_button", 1);
+		initButtons(buttons[1], "bubble_sort_button", 1);
+//		if (sort_type.equals("bubble")) initButtons(buttons[1], "bubble_sort_button", 1);
+//		else if (sort_type.equals("selection")) initButtons(buttons[1], "selection_button", 1);
+//		else if (sort_type.equals("merge")) initButtons(buttons[1], "merge_button", 1);
+//		else if (sort_type.equals("quick")) initButtons(buttons[1], "quick_button", 1);
+//		else if (sort_type.equals("insertion")) initButtons(buttons[1], "insertion_button", 1);
+//		else if (sort_type.equals("shell")) initButtons(buttons[1], "shell_button", 1);
 
 		initButtons(buttons[2], "stop_button", 3);
 		initButtons(buttons[3], "continue_button", 4);

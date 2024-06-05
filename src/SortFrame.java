@@ -1,5 +1,3 @@
-
-
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -15,13 +13,12 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         ChangeListener, Visualizer.SortedListener,
         ButtonPanel.SortButtonListener, MyCanvas.VisualizerProvider {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private static final int WIDTH = 1600;
-	protected static final int HEIGHT = 1000;
+    private static final int WIDTH = 1600;
+    protected static final int HEIGHT = 1000;
     private static final int CAPACITY = 50, FPS = 100;
+
+    public static int screenWidth;
+    public static int screenHeight;
 
     protected JPanel mainPanel, inputPanel, sliderPanel, inforPanel;
     protected ButtonPanel buttonPanel;
@@ -34,12 +31,17 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
 
     public SortFrame(String title) {
         super(title);
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        screenWidth = screenSize.width;
+        screenHeight = screenSize.height;
+
         Container cp = getContentPane();
         cp.setLayout(new BorderLayout());
         this.mainPanel = initialize();
         cp.add(mainPanel, BorderLayout.CENTER);
 
-        setSize(800, 600);
+        setSize(screenWidth, screenHeight);
 
         setLocationRelativeTo(null);
         setResizable(false);
@@ -64,11 +66,6 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
             }
         });
 
-        // Enter fullscreen mode
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        if (gd.isFullScreenSupported()) {
-            gd.setFullScreenWindow(this);
-        }
     }
 
     protected JPanel initialize() {
@@ -87,21 +84,23 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
     }
 
     protected void initializeButtonPanel() {
-        buttonPanel = new ButtonPanel(this, "bubble");
-        buttonPanel.setBounds(20, 400, 300, HEIGHT);
-        buttonPanel.setBackground(Color.BLACK);
+        buttonPanel = new ButtonPanel(this);
+        int y = (int)(0.14*screenHeight);
+        int width = (int)(0.16*screenWidth);
+        buttonPanel.setBounds(0, y, width, screenHeight);
+        buttonPanel.setBackground(ColorManager.BACKGROUND);
         mainPanel.add(buttonPanel);
     }
 
     protected void initializeCanvas() {
         canvas = new MyCanvas(this);
-        int cWidth = WIDTH - 300;
-        int cHeight = HEIGHT - 100;
+        int cWidth = (int)(0.77*screenWidth);
+        int cHeight = (int)(0.82*screenHeight);
         canvas.setFocusable(false);
         canvas.setMaximumSize(new Dimension(cWidth, cHeight));
         canvas.setMinimumSize(new Dimension(cWidth, cHeight));
         canvas.setPreferredSize(new Dimension(cWidth, cHeight));
-        canvas.setBounds(350, 100, cWidth, cHeight);
+        canvas.setBounds((int)(0.2*screenWidth), (int)(0.11*screenHeight), cWidth, cHeight);
         mainPanel.add(canvas);
         pack();
     }
@@ -140,7 +139,7 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         inputPanel.add(capacityLabel);
         inputPanel.add(capacityField);
         inputPanel.setBackground(ColorManager.BACKGROUND);
-        inputPanel.setBounds(25, 20, 170, 30);
+        inputPanel.setBounds((int)(0.015*screenWidth), (int)(0.019*screenHeight), (int)(0.1*screenWidth), (int)(0.028*screenHeight));
         mainPanel.add(inputPanel);
     }
 
@@ -176,22 +175,22 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         sliderPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add spacing between label and slider
         sliderPanel.add(fpsSlider);
 
-        sliderPanel.setBounds(10, 80, 240, 150); // Increase height for better spacing
+        sliderPanel.setBounds((int)(0.01*screenWidth), (int)(0.047*screenHeight), (int)(0.17*screenWidth), (int)(0.2*screenHeight)); // Increase height for better spacing
         mainPanel.add(sliderPanel);
     }
 
 
     protected void initializeInforPanel() {
         timeLabel = new JLabel("Elapsed Time: 0 µs");
-        timeLabel.setFont(new Font(null, Font.PLAIN, 20));
+        timeLabel.setFont(new Font(null, Font.PLAIN, 18));
         timeLabel.setForeground(ColorManager.TEXT_GREEN);
 
         compLabel = new JLabel("Comparisons: 0");
-        compLabel.setFont(new Font(null, Font.PLAIN, 20));
+        compLabel.setFont(new Font(null, Font.PLAIN, 18));
         compLabel.setForeground(ColorManager.TEXT_RED);
 
         swapLabel = new JLabel("Swaps: 0");
-        swapLabel.setFont(new Font(null, Font.PLAIN, 20));
+        swapLabel.setFont(new Font(null, Font.PLAIN, 18));
         swapLabel.setForeground(ColorManager.TEXT_YELLOW);
 
         inforPanel = new JPanel(new GridLayout(1, 0));
@@ -200,7 +199,7 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         inforPanel.add(compLabel);
         inforPanel.add(swapLabel);
         inforPanel.setBackground(ColorManager.BACKGROUND);
-        inforPanel.setBounds(700, 30, 800, 30);
+        inforPanel.setBounds((int)(0.4*screenWidth), (int)(0.05*screenHeight), (int)(0.5*screenWidth), (int)(0.018*screenHeight));
         mainPanel.add(inforPanel);
     }
 
@@ -228,20 +227,20 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
     public void onArraySorted(long elapsedTime, int comp, int swapping) {
         timeLabel.setText("Elapsed Time: " + (int) (elapsedTime / 1000.0) + " µs");
         compLabel.setText("Comparisons: " + comp);
-		swapLabel.setText("Swaps: " + swapping);
-	}
+        swapLabel.setText("Swaps: " + swapping);
+    }
 
 
-	// return the graphics for drawing
-	public BufferStrategy getBufferStrategy()
-	{
-		BufferStrategy bs = canvas.getBufferStrategy();
-		if (bs == null)
-		{
-			canvas.createBufferStrategy(2);
-			bs = canvas.getBufferStrategy();
-		}
+    // return the graphics for drawing
+    public BufferStrategy getBufferStrategy()
+    {
+        BufferStrategy bs = canvas.getBufferStrategy();
+        if (bs == null)
+        {
+            canvas.createBufferStrategy(2);
+            bs = canvas.getBufferStrategy();
+        }
 
-		return bs;
-	}
+        return bs;
+    }
 }

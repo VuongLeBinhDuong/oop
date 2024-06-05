@@ -15,14 +15,6 @@ public class ShellSortFrame extends SortFrame {
     }
 
     @Override
-    protected void initializeButtonPanel() {
-        buttonPanel = new ButtonPanel(this, "shell");
-        buttonPanel.setBounds(0, 150, 250, HEIGHT);
-        buttonPanel.setBackground(ColorManager.BACKGROUND);
-        mainPanel.add(buttonPanel);
-    }
-
-    @Override
     public void sortButtonClicked(int id) {
         switch (id) {
             case 0:  // create button
