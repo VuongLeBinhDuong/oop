@@ -43,6 +43,9 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
 
         setSize(screenWidth, screenHeight);
 
+        System.out.println(screenWidth);
+        System.out.println(screenHeight);
+
         setLocationRelativeTo(null);
         setResizable(false);
         setBackground(Color.WHITE);
@@ -87,10 +90,23 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         buttonPanel = new ButtonPanel(this);
         int y = (int)(0.14*screenHeight);
         int width = (int)(0.16*screenWidth);
-        buttonPanel.setBounds(0, y, width, screenHeight);
+        buttonPanel.setBounds(0, y, width, HEIGHT);
         buttonPanel.setBackground(ColorManager.BACKGROUND);
         mainPanel.add(buttonPanel);
     }
+
+//    protected void initializeCanvas() {
+//        canvas = new MyCanvas(this);
+//        int cWidth = WIDTH - 300;
+//        int cHeight = HEIGHT - 100;
+//        canvas.setFocusable(false);
+//        canvas.setMaximumSize(new Dimension(cWidth, cHeight));
+//        canvas.setMinimumSize(new Dimension(cWidth, cHeight));
+//        canvas.setPreferredSize(new Dimension(cWidth, cHeight));
+//        canvas.setBounds(350, 100, cWidth, cHeight);
+//        mainPanel.add(canvas);
+//        pack();
+//    }
 
     protected void initializeCanvas() {
         canvas = new MyCanvas(this);

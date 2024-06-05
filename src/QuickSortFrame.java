@@ -14,6 +14,13 @@ public class QuickSortFrame extends SortFrame {
         initializeButtonPanel();
     }
 
+//    @Override
+//    protected void initializeButtonPanel() {
+//        buttonPanel = new ButtonPanel(this, "quick");
+//        buttonPanel.setBounds(0, 150, 250, HEIGHT);
+//        buttonPanel.setBackground(ColorManager.BACKGROUND);
+//        mainPanel.add(buttonPanel);
+//    }
 
     @Override
     public void sortButtonClicked(int id) {
@@ -25,10 +32,6 @@ public class QuickSortFrame extends SortFrame {
                 visualizer.quickSort();
                 break;
             case 2: // back button
-                getContentPane().removeAll();
-                getContentPane().repaint();
-                setVisible(false);
-                new MainMenu();
                 break;
         }
     }
