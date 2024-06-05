@@ -7,9 +7,7 @@ import java.util.List;
 public class BubbleSortFrame extends SortFrame {
 
 	private List<Thread> threads;
-	
-	
-	
+
 	class RunThread extends Thread {
 		public void run() {
 			try {
