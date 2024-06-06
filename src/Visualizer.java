@@ -26,11 +26,10 @@ public class Visualizer
 	private Graphics g;
 
 	private SortedListener listener;
-	private boolean isPaused = false;
 
 	protected int stopBubbleFlag = 0;
 	protected int stopInsertionFlag = 0;
-	protected int stopSelectionFlag = 0;
+
 
 	private volatile boolean pausedSelection = false;
 	private final Object lockSelection = new Object();
@@ -221,8 +220,6 @@ public class Visualizer
 			lockSelection.notifyAll();
 		}
 	}
-
-
 
 
 	/* INSERTION SORT */

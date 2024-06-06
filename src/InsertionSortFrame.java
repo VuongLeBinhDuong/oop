@@ -48,6 +48,9 @@ public class InsertionSortFrame extends SortFrame {
                 runThread.start();
                 break;
             case 2:  // back button
+                getContentPane().removeAll();
+                getContentPane().repaint();
+                setVisible(false);
                 new MainMenu();
                 break;
             case 3:  // stop button

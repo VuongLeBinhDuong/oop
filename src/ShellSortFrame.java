@@ -36,6 +36,9 @@ public class ShellSortFrame extends SortFrame {
                 }
                 break;
             case 2: // back button
+                getContentPane().removeAll();
+                getContentPane().repaint();
+                setVisible(false);
                 break;
         }
     }
