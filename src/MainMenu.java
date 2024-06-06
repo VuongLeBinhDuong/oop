@@ -66,8 +66,6 @@ public class MainMenu extends JFrame {
 
     }
 
-
-
     public void createMainMenu() {
         // Clear existing components from the center container
         center.removeAll();
@@ -79,37 +77,61 @@ public class MainMenu extends JFrame {
         GridBagConstraints gbcTitle = new GridBagConstraints();
         gbcTitle.gridx = 0;
         gbcTitle.gridy = 0;
-        gbcTitle.insets = new Insets(20, 0, 30, 0);
+        gbcTitle.insets = new Insets(20, 0, 5, 0); // Reduced bottom inset
 
         JLabel title = new JLabel("Sorting Visualization");
-        title.setFont(new Font("Arial", Font.BOLD, 40));
+        title.setFont(new Font("Arial", Font.BOLD, 60));
         titlePanel.add(title, gbcTitle);
 
-        // Create a JPanel to hold the introduction text, prompt label, and combo box
+        // Create a JPanel to hold the introduction text
         JPanel selectionPanel = new JPanel(new GridBagLayout());
         selectionPanel.setBackground(Color.WHITE);
 
         GridBagConstraints gbcSelection = new GridBagConstraints();
         gbcSelection.gridx = 0;
         gbcSelection.gridy = 0;
-        gbcSelection.insets = new Insets(30, 0, 10, 0);
+        gbcSelection.insets = new Insets(5, 20, 10, 20); // Adjust insets to add padding on left and right and reduced top inset
+        gbcSelection.fill = GridBagConstraints.BOTH; // Ensure the component expands both horizontally and vertically
+        gbcSelection.weightx = 1.0; // Ensure the introductionLabel expands horizontally
+        gbcSelection.weighty = 1.0; // Ensure the introductionLabel expands vertically
 
-        JLabel introductionLabel = new JLabel("<html>Welcome to Sorting Visualization Tool!<br><br>"
-                + "Sorting is an essential concept in computer science and algorithms.<br>"
-                + "With this tool, you can visualize various sorting algorithms in action.<br>"
-                + "Observe how each algorithm rearranges elements to achieve the final sorted order.<br>"
-                + "Select a sorting algorithm from the list below and click Submit to begin.<br><br>"
-                + "Enjoy exploring the fascinating world of sorting algorithms!</html>");
+        JLabel introductionLabel = new JLabel("<html>" +
+                "Sorting algorithms are used to sort a data structure according to a specific order relationship, such as numerical order or lexicographical order.<br><br>" +
+                "This operation is one of the most important and widespread in computer science. For a long time, new methods have been developed to make this procedure faster and faster.<br><br>" +
+                "There are currently hundreds of different sorting algorithms, each with its own specific characteristics. They are classified according to two metrics: space complexity and time complexity.<br><br>" +
+                "Those two kinds of complexity are represented with asymptotic notations, mainly with the symbols O, Θ, Ω, representing respectively the upper bound, the tight bound, and the lower bound of the algorithm's complexity, specifying in brackets an expression in terms of n, the number of the elements of the data structure.<br><br>" +
+                "Most of them fall into two categories:<br><br>" +
+                "<b>Logarithmic</b><br>" +
+                "The complexity is proportional to the binary logarithm (i.e to the base 2) of n.<br>" +
+                "An example of a logarithmic sorting algorithm is Quick sort, with space and time complexity O(n × log n).<br><br>" +
+                "<b>Quadratic</b><br>" +
+                "The complexity is proportional to the square of n.<br>" +
+                "An example of a quadratic sorting algorithm is Bubble sort, with a time complexity of O(n<sup>2</sup>).<br>" +
+                "Space and time complexity can also be further subdivided into 3 different cases: best case, average case and worst case.<br><br>" +
+                "Sorting algorithms can be difficult to understand and it's easy to get confused. We believe visualizing sorting algorithms can be a great way to better understand their functioning while having fun!" +
+                "</html>");
         introductionLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         selectionPanel.add(introductionLabel, gbcSelection);
 
         gbcSelection.gridy++;
+        gbcSelection.weightx = 0; // Reset weightx for subsequent components
+        gbcSelection.weighty = 0; // Reset weighty for subsequent components
+        gbcSelection.fill = GridBagConstraints.HORIZONTAL; // Fill horizontally for subsequent components
+
+        // Create a new JPanel to hold the prompt label, combo box, and button
+        JPanel promptPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbcPrompt = new GridBagConstraints();
+        gbcPrompt.gridx = 0;
+        gbcPrompt.gridy = 0;
+        gbcPrompt.insets = new Insets(10, 0, 10, 10); // Adjust insets as needed
+
         JLabel promptLabel = new JLabel("Please select a sorting algorithm:");
         promptLabel.setFont(new Font("Arial", Font.PLAIN, 18));
-        selectionPanel.add(promptLabel, gbcSelection);
+        promptPanel.add(promptLabel, gbcPrompt);
 
-        gbcSelection.gridy++;
-        gbcSelection.insets = new Insets(0, 0, 70, 0);
+        gbcPrompt.gridx++;
+        gbcPrompt.insets = new Insets(10, 10, 10, 10); // Adjust insets as needed
+
         JComboBox<String> sortComboBox = new JComboBox<>();
         sortComboBox.addItem("Bubble Sort");
         sortComboBox.addItem("Selection Sort");
@@ -117,8 +139,8 @@ public class MainMenu extends JFrame {
         sortComboBox.addItem("Quick Sort");
         sortComboBox.addItem("Merge Sort");
         sortComboBox.addItem("Shell Sort");
-        sortComboBox.setPreferredSize(new Dimension(300, 30));
-        selectionPanel.add(sortComboBox, gbcSelection);
+        sortComboBox.setPreferredSize(new Dimension(150, 30)); // Set smaller width
+        promptPanel.add(sortComboBox, gbcPrompt);
         sortComboBox.setSelectedIndex(-1); // No item selected initially
 
         sortComboBox.addActionListener(new ActionListener() {
@@ -129,24 +151,17 @@ public class MainMenu extends JFrame {
             }
         });
 
-        // Create a JPanel to hold the button
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
-        buttonPanel.setBackground(Color.WHITE);
-
-        GridBagConstraints gbcButton = new GridBagConstraints();
-        gbcButton.gridx = 0;
-        gbcButton.gridy = 0;
-        gbcButton.insets = new Insets(30, 0, 30, 0);
+        gbcPrompt.gridx++;
+        gbcPrompt.insets = new Insets(10, 0, 10, 0); // Adjust insets as needed
 
         JButton button = new JButton("Submit");
-        button.setPreferredSize(new Dimension(100, 40));
+        button.setPreferredSize(new Dimension(100, 30)); // Align height with combo box
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (selected == null){
+                if (selected == null) {
                     JOptionPane.showMessageDialog(MainMenu.this, "Choose a type of sort before submit");
-                }
-                else {
+                } else {
                     getContentPane().removeAll();
                     getContentPane().repaint();
                     switch (selected) {
@@ -182,30 +197,32 @@ public class MainMenu extends JFrame {
                 center.repaint();
             }
         });
-        buttonPanel.add(button, gbcButton);
+        promptPanel.add(button, gbcPrompt);
+
+        // Add the promptPanel to the selectionPanel
+        selectionPanel.add(promptPanel, gbcSelection);
 
         // Add the panels to the center container with vertical spacing
         center.setLayout(new GridBagLayout());
         GridBagConstraints gbcCenter = new GridBagConstraints();
         gbcCenter.gridx = 0;
         gbcCenter.gridy = 0;
-        gbcCenter.fill = GridBagConstraints.HORIZONTAL;
+        gbcCenter.fill = GridBagConstraints.BOTH; // Fill both horizontally and vertically
         gbcCenter.anchor = GridBagConstraints.CENTER;
         gbcCenter.insets = new Insets(10, 10, 10, 10);
+        gbcCenter.weightx = 1.0;
+        gbcCenter.weighty = 1.0;
 
         center.add(titlePanel, gbcCenter);
 
         gbcCenter.gridy++;
         center.add(selectionPanel, gbcCenter);
 
-        gbcCenter.gridy++;
-        center.add(buttonPanel, gbcCenter);
-
         // Revalidate and repaint the center container
         center.revalidate();
         center.repaint();
-
     }
+
 
 
     JPanel createCenter() {
