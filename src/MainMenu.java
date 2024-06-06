@@ -23,6 +23,8 @@ public class MainMenu extends JFrame {
     public static final int CAPACITY = 50, FPS = 100;
     private JPanel center;
     private String selected;
+    public static int screenWidth;
+    public static int screenHeight;
     public static void main(String[] args)
     {
         new MainMenu();
@@ -34,8 +36,10 @@ public class MainMenu extends JFrame {
         this.center = createCenter();
         cp.add(center, BorderLayout.CENTER);
         setTitle("Sorting Visualization");
-
-        setSize(800, 600);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        screenWidth = screenSize.width;
+        screenHeight = screenSize.height;
+        setSize(screenWidth, screenHeight);
 
         setLocationRelativeTo(null);
         setResizable(false);
@@ -53,23 +57,13 @@ public class MainMenu extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION);
+                int choice = JOptionPane.showConfirmDialog(MainMenu.this, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION);
                 if (choice == JOptionPane.YES_OPTION) {
                     System.exit(0);
-                } else {
-                    // Clear all components and recreate a new MainMenu instance
-                    getContentPane().removeAll();
-                    getContentPane().repaint();
-                    new MainMenu();
                 }
             }
         });
 
-        // Enter fullscreen mode
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        if (gd.isFullScreenSupported()) {
-            gd.setFullScreenWindow(this);
-        }
     }
 
 
@@ -117,12 +111,12 @@ public class MainMenu extends JFrame {
         gbcSelection.gridy++;
         gbcSelection.insets = new Insets(0, 0, 70, 0);
         JComboBox<String> sortComboBox = new JComboBox<>();
-        sortComboBox.addItem("Bubble");
-        sortComboBox.addItem("Selection");
-        sortComboBox.addItem("Insertion");
-        sortComboBox.addItem("Quick");
-        sortComboBox.addItem("Merge");
-        sortComboBox.addItem("Shell");
+        sortComboBox.addItem("Bubble Sort");
+        sortComboBox.addItem("Selection Sort");
+        sortComboBox.addItem("Insertion Sort");
+        sortComboBox.addItem("Quick Sort");
+        sortComboBox.addItem("Merge Sort");
+        sortComboBox.addItem("Shell Sort");
         sortComboBox.setPreferredSize(new Dimension(300, 30));
         selectionPanel.add(sortComboBox, gbcSelection);
         sortComboBox.setSelectedIndex(-1); // No item selected initially
@@ -150,36 +144,33 @@ public class MainMenu extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (selected == null){
-                    JOptionPane.showMessageDialog(null, "Choose a type of sort before submit");
-                    getContentPane().removeAll();
-                    getContentPane().repaint();
-                    new MainMenu();
+                    JOptionPane.showMessageDialog(MainMenu.this, "Choose a type of sort before submit");
                 }
                 else {
                     getContentPane().removeAll();
                     getContentPane().repaint();
                     switch (selected) {
-                        case "Bubble":
+                        case "Bubble Sort":
                             new BubbleSortFrame().setVisible(true);
                             setVisible(false); // Hide the main menu
                             break;
-                        case "Selection":
+                        case "Selection Sort":
                             new SelectionSortFrame().setVisible(true);
                             setVisible(false); // Hide the main menu
                             break;
-                        case "Insertion":
+                        case "Insertion Sort":
                             new InsertionSortFrame().setVisible(true);
                             setVisible(false); // Hide the main menu
                             break;
-                        case "Quick":
+                        case "Quick Sort":
                             new QuickSortFrame().setVisible(true);
                             setVisible(false); // Hide the main menu
                             break;
-                        case "Merge":
+                        case "Merge Sort":
                             new MergeSortFrame().setVisible(true);
                             setVisible(false); // Hide the main menu
                             break;
-                        case "Shell":
+                        case "Shell Sort":
                             new ShellSortFrame().setVisible(true);
                             setVisible(false); // Hide the main menu
                             break;
@@ -361,14 +352,20 @@ public class MainMenu extends JFrame {
         JTextArea helpText = new JTextArea();
         helpText.setText("Welcome to Sorting Visualization!\n\n"
                 + "This application provides an interactive platform for visualizing various sorting algorithms in action. "
-                + "Here are the steps to use this visualization:\n\n"
-                + "1. Choose a sorting algorithm from the drop-down menu.\n"
-                + "2. Click the 'Submit' button to start the visualization.\n"
-                + "3. Observe the sorting process as the algorithm sorts the data.\n\n"
-                + "You can visualize popular sorting algorithms such as Bubble Sort, Selection Sort, Insertion Sort, Quick Sort, and Merge Sort. "
-                + "Understanding sorting algorithms visually can enhance your comprehension and analysis of their performance.");
+                + "Here are the detailed steps and functionalities available in this visualization tool:\n\n"
+                + "1. **Choose a sorting algorithm:** Select from popular sorting algorithms like Bubble Sort, Selection Sort, "
+                + "Insertion Sort, Quick Sort, and Merge Sort from the drop-down menu.\n"
+                + "2. **Create an array:** Click the 'Create Array' button to generate a random array of data that you can sort. "
+                + "You can adjust the size of the array and the range of numbers using the input fields provided.\n"
+                + "3. **Start sorting:** Once an array is created, press the 'Sort' button to start the visualization of the sorting process. "
+                + "The array elements will be animated to illustrate how the algorithm sorts the data step-by-step.\n"
+                + "4. **Pause/Continue:** If you need to closely observe or analyze a particular step, you can pause the visualization at any time by clicking the 'Pause' button. "
+                + "Click 'Continue' to resume the sorting process.\n"
+                + "5. **Adjust speed:** Use the slider to adjust the speed of the sorting visualization. Slowing down the animation can help in understanding more complex algorithms.\n\n"
+                + "Understanding sorting algorithms visually can significantly enhance your comprehension and analysis of their performance and efficiency. "
+                + "Use this tool to explore and learn the characteristics of different sorting algorithms in a dynamic and interactive environment.");
 
-        helpText.setFont(new Font("Arial", Font.PLAIN, 14)); // Increased font size
+        helpText.setFont(new Font("Arial", Font.PLAIN, 14)); // Consistent font styling
         helpText.setEditable(false);
         helpText.setLineWrap(true);
         helpText.setWrapStyleWord(true);
@@ -383,6 +380,7 @@ public class MainMenu extends JFrame {
         center.revalidate();
         center.repaint();
     }
+
 
     public void createAbout() {
         center.removeAll();

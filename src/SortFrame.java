@@ -54,14 +54,9 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION);
+                int choice = JOptionPane.showConfirmDialog(SortFrame.this, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION);
                 if (choice == JOptionPane.YES_OPTION) {
                     System.exit(0);
-                } else {
-                    // Clear all components and recreate a new MainMenu instance
-                    getContentPane().removeAll();
-                    getContentPane().repaint();
-                    new MainMenu();
                 }
             }
         });
