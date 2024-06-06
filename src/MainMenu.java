@@ -101,15 +101,20 @@ public class MainMenu extends JFrame {
                 "There are currently hundreds of different sorting algorithms, each with its own specific characteristics. They are classified according to two metrics: space complexity and time complexity.<br><br>" +
                 "Those two kinds of complexity are represented with asymptotic notations, mainly with the symbols O, Θ, Ω, representing respectively the upper bound, the tight bound, and the lower bound of the algorithm's complexity, specifying in brackets an expression in terms of n, the number of the elements of the data structure.<br><br>" +
                 "Most of them fall into two categories:<br><br>" +
-                "<b>Logarithmic</b><br>" +
-                "The complexity is proportional to the binary logarithm (i.e to the base 2) of n.<br>" +
-                "An example of a logarithmic sorting algorithm is Quick sort, with space and time complexity O(n × log n).<br><br>" +
-                "<b>Quadratic</b><br>" +
-                "The complexity is proportional to the square of n.<br>" +
-                "An example of a quadratic sorting algorithm is Bubble sort, with a time complexity of O(n<sup>2</sup>).<br>" +
-                "Space and time complexity can also be further subdivided into 3 different cases: best case, average case and worst case.<br><br>" +
-                "Sorting algorithms can be difficult to understand and it's easy to get confused. We believe visualizing sorting algorithms can be a great way to better understand their functioning while having fun!" +
+                "<b>Logarithmic:</b><br>" +
+                "<ul>" +
+                "<li>The complexity is proportional to the binary logarithm (i.e., to the base 2) of n.</li>" +
+                "<li>An example of a logarithmic sorting algorithm is Quick sort, with space and time complexity O(n × log n).</li>" +
+                "</ul><br>" +
+                "<b>Quadratic:</b><br>" +
+                "<ul>" +
+                "<li>The complexity is proportional to the square of n.</li>" +
+                "<li>An example of a quadratic sorting algorithm is Bubble sort, with a time complexity of O(n<sup>2</sup>).</li>" +
+                "</ul><br>" +
+                "Space and time complexity can also be further subdivided into 3 different cases: best case, average case, and worst case.<br><br>" +
+                "Sorting algorithms can be difficult to understand, and it's easy to get confused. We believe visualizing sorting algorithms can be a great way to better understand their functioning while having fun!" +
                 "</html>");
+
         introductionLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         selectionPanel.add(introductionLabel, gbcSelection);
 
