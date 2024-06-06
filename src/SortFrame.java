@@ -114,7 +114,7 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         MyFormatter formatter = new MyFormatter(format);
         formatter.setValueClass(Integer.class);
         formatter.setMinimum(0);
-        formatter.setMaximum(200);
+        formatter.setMaximum(400);
         formatter.setAllowsInvalid(false);
         formatter.setCommitsOnValidEdit(true);
 
@@ -145,7 +145,7 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         fpsLabel.setForeground(ColorManager.TEXT);
         fpsLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        fpsSlider = new JSlider(JSlider.HORIZONTAL, 50, 350, FPS);
+        fpsSlider = new JSlider(JSlider.HORIZONTAL, 50, 450, FPS);
         fpsSlider.setMajorTickSpacing(100);
         fpsSlider.setMinorTickSpacing(20);
         fpsSlider.setPaintTicks(true);
