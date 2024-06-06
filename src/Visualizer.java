@@ -27,18 +27,23 @@ public class Visualizer
 
 	private SortedListener listener;
 	private boolean isPaused = false;
-	protected int stopFlag = 0;
-	protected int check = 0;
-	
+
+	protected int stopBubbleFlag = 0;
+	protected int stopInsertionFlag = 0;
+	protected int stopSelectionFlag = 0;
+
+	private volatile boolean pausedSelection = false;
+	private final Object lockSelection = new Object();
+
 
 	public Visualizer(int capacity, int fps, SortedListener listener)
 	{
 		this.capacity = capacity;
-		this.speed = (int) (1000.0/fps);
+		this.speed = (int) (100000.0/fps);
 		this.listener = listener;
 		startTime = time = comp = swapping = 0;
 
-		originalColor = ColorManager.BAR_CYAN;
+		originalColor = ColorManager.BAR_GREEN;
 		comparingColor = Color.YELLOW;
 		swappingColor = ColorManager.BAR_RED;
 
@@ -62,7 +67,7 @@ public class Visualizer
 		double width = (double) (canvasWidth - PADDING*2) / capacity;
 
 		// get graphics
-        g = bs.getDrawGraphics();
+		g = bs.getDrawGraphics();
 		g.setColor(ColorManager.CANVAS_BACKGROUND);
 		g.fillRect(0, 0, canvasWidth, canvasHeight);
 
@@ -90,84 +95,71 @@ public class Visualizer
 	// return a color for a bar
 	private Color getBarColor(int value)
 	{
-
 		return ColorManager.BAR_BLUE;
-
 	}
 
 
 	/* BUBBLE SORT */
 	public void bubbleSort() throws InterruptedException {
-	    if (!isCreated()) return;
+		if (!isCreated()) return;
 
-	    // get graphics
-	    g = bs.getDrawGraphics();
+		// get graphics
+		g = bs.getDrawGraphics();
 
-	    // calculate elapsed time
-	    startTime = System.nanoTime();
-	    Sort.bubbleSort(array.clone());
-	    time = System.nanoTime() - startTime;
+		// calculate elapsed time
+		startTime = System.nanoTime();
+		Sort.bubbleSort(array.clone());
+		time = System.nanoTime() - startTime;
 
-	    comp = swapping = 0;
-	    int count = 0;
-	    for (int i = array.length - 1; i >= 0; i--) {
-	        count = 0;
-	        for (int j = 0; j < i; j++) {
-	            colorPair(j, j + 1, comparingColor);
+		comp = swapping = 0;
+		int count = 0;
+		for (int i = array.length - 1; i >= 0; i--) {
+			count = 0;
+			for (int j = 0; j < i; j++) {
+				colorPair(j, j + 1, comparingColor);
 
-	            if (array[j] > array[j + 1]) {
-	                swap(j, j + 1);
-	                count++;
-	                swapping++;
-	            }
+				if (array[j] > array[j + 1]) {
+					swap(j, j + 1);
+					count++;
+					swapping++;
+				}
 
-	            comp++;  // Check for pause
-	            if (stopFlag == 1) {
-	                handlePause();
-	            } 
-	        }
+				comp++;
+				// Check for pause
+				if (stopBubbleFlag == 1) {
+					handlePause();
+				}
+			}
 
-	        bars[i].setColor(getBarColor(i));
-	        bars[i].draw(g);
-	        bs.show();
+			bars[i].setColor(getBarColor(i));
+			bars[i].draw(g);
+			bs.show();
 
-	        if (count == 0)  // the array is sorted
-	            break;
-	    }
-	    finishAnimation();
+			if (count == 0)  // the array is sorted
+				break;
+		}
+		finishAnimation();
 
-	    g.dispose();
+		g.dispose();
 	}
-	
-	private synchronized void handlePause() throws InterruptedException {
-                wait();
-                redrawBars();  // Redraw bars immediately after resuming
-    }
 
-    public synchronized void pause() {
-        isPaused = true;
-    }
 
-    public synchronized void resume() {
-        notifyAll();
-    }
-    
-    private void redrawBars() {
-        for (int i = 0; i < bars.length; i++) {
-            bars[i].draw(g);
-        }
-        bs.show();
-    }
+
+	private void redrawBars() {
+		for (int i = 0; i < bars.length; i++) {
+			bars[i].draw(g);
+		}
+		bs.show();
+	}
 
 
 	/* SELECTION SORT */
-	public void selectionSort()
-	{
+	public void selectionSort() throws InterruptedException {
 		if (!isCreated())
 			return;
 
 		// get graphics
-        g = bs.getDrawGraphics();
+		g = bs.getDrawGraphics();
 
 		// calculate elapsed time
 		startTime = System.nanoTime();
@@ -189,10 +181,15 @@ public class Visualizer
 
 				colorPair(index, j, comparingColor);
 				comp++;
+
+
 			}
 
 			swap(i, index);
 			swapping++;
+
+			// Check for pause
+			checkPaused();
 
 			bars[i].setColor(getBarColor(i));
 			bars[i].draw(g);
@@ -204,10 +201,32 @@ public class Visualizer
 		g.dispose();
 	}
 
+	private void checkPaused() throws InterruptedException {
+		synchronized (lockSelection) {
+			while (pausedSelection) {
+				lockSelection.wait();
+			}
+		}
+	}
+
+	public void pauseSelection() {
+		synchronized (lockSelection) {
+			pausedSelection = true;
+		}
+	}
+
+	public void resumeSelection() {
+		synchronized (lockSelection) {
+			pausedSelection = false;
+			lockSelection.notifyAll();
+		}
+	}
+
+
+
 
 	/* INSERTION SORT */
-	public void insertionSort()
-	{
+	public void insertionSort() throws InterruptedException {
 		if (!isCreated())
 			return;
 
@@ -240,6 +259,15 @@ public class Visualizer
 				index--;
 				comp++;
 				swapping++;
+
+				// Check for pause
+				if (stopInsertionFlag == 1) {
+					try {
+						handlePause();
+					} catch (InterruptedException e) {
+						throw new RuntimeException(e);
+					}
+				}
 			}
 			comp++;
 
@@ -264,8 +292,7 @@ public class Visualizer
 
 
 	/* QUICK SORT */
-	public void quickSort()
-	{
+	public void quickSort() throws InterruptedException {
 		if (!isCreated())
 			return;
 
@@ -286,8 +313,7 @@ public class Visualizer
 
 
 	// recursive quicksort
-	private void quickSort(int start, int end)
-	{
+	private void quickSort(int start, int end) throws InterruptedException {
 		if (start < end)
 		{
 			// place pivot in correct spot
@@ -308,8 +334,7 @@ public class Visualizer
 
 
 	// quick sort partition
-	private int partition(int start, int end)
-	{
+	private int partition(int start, int end) throws InterruptedException {
 		// pivot is the last element
 		int pivot = array[end];
 
@@ -328,6 +353,13 @@ public class Visualizer
 				index++;
 				swap(index, i);
 				swapping++;
+
+				// Check for pause
+				try {
+					checkPaused();
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
 			}
 			comp++;
 		}
@@ -341,12 +373,18 @@ public class Visualizer
 		swap(index, end);
 		swapping++;
 
+		// Check for pause
+		try {
+			checkPaused();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+
 		return index;
 	}
 
 	/* MERGE SORT */
-	public void mergeSort()
-	{
+	public void mergeSort() throws InterruptedException {
 		if (!isCreated())
 			return;
 
@@ -367,8 +405,7 @@ public class Visualizer
 
 
 	// recursive mergeSort
-	private void mergeSort(int left, int right)
-	{
+	private void mergeSort(int left, int right) throws InterruptedException {
 		if (left >= right)
 			return;
 
@@ -382,13 +419,16 @@ public class Visualizer
 		mergeSort(middle+1, right);
 
 		// merge them
-		merge(left, middle, right);
+		try {
+			merge(left, middle, right);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 
 	// merge for mergeSort
-	private void merge(int left, int middle, int right)
-	{
+	private void merge(int left, int middle, int right) throws InterruptedException {
 		Color mergeColor = getBarColor(middle);
 
 		// number of items in the first half
@@ -427,6 +467,13 @@ public class Visualizer
 			k++;
 			comp++;
 			swapping++;
+
+			// Check for pause
+			try {
+				checkPaused();
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 
@@ -443,6 +490,12 @@ public class Visualizer
 			l++;
 			k++;
 			swapping++;
+
+			try {
+				checkPaused();
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 		while (r < n2)
@@ -457,6 +510,12 @@ public class Visualizer
 			r++;
 			k++;
 			swapping++;
+
+			try {
+				checkPaused();
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -584,31 +643,50 @@ public class Visualizer
 				int temp = array[i];
 				int j;
 				for (j = i; j >= gap && array[j - gap] > temp; j -= gap) {
+					// Tô màu các thanh đang so sánh
 					colorPair(j, j - gap, comparingColor);
 
 					array[j] = array[j - gap];
+
+					// Xóa và cập nhật giá trị của thanh
 					bars[j].clear(g);
 					bars[j].setValue(bars[j - gap].getValue());
-					colorBar(j, swappingColor);
+					bars[j].setColor(swappingColor);
+					bars[j].draw(g);
+
+					bs.show();
 
 					swapping++;
 					comp++;
 				}
 				array[j] = temp;
+
 				bars[j].clear(g);
 				bars[j].setValue(temp);
 				bars[j].setColor(getBarColor(j));
 				bars[j].draw(g);
+				bs.show();
 
-				if (stopFlag == 1) {
+				// Kiểm tra tạm dừng
+				if (stopBubbleFlag == 1) {
 					handlePause();
 				}
-				bs.show();
 			}
 		}
 
 		finishAnimation();
 		g.dispose();
+	}
+
+	// handle stop buttons
+	private synchronized void handlePause() throws InterruptedException {
+		wait();
+		redrawBars();  // Redraw bars immediately after resuming
+	}
+
+	// handle continue button
+	public synchronized void resume() {
+		notifyAll();
 	}
 
 

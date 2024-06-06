@@ -1,50 +1,40 @@
-
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BubbleSortFrame extends SortFrame {
 
-	private List<Thread> threads;
+    private static final long serialVersionUID = 1L;
 
-	class RunThread extends Thread {
-		public void run() {
-			try {
-				visualizer.bubbleSort();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	class StopThread extends Thread {
-		public void run() {
-			visualizer.stopFlag = 1;
-		}
-	}
-	
-	class ContinueThread extends Thread {
-		public void run() {
-			visualizer.stopFlag = 0;
-			visualizer.resume();
-			
-		}
-	}
-	
-	public void interruptAllThreads() {
-        for (Thread thread : threads) {
-            
-                thread.interrupt();
-            
+    class RunThread extends Thread {
+        public void run() {
+            try {
+                visualizer.bubbleSort();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
-	public BubbleSortFrame() {
+    class StopThread extends Thread {
+        public void run() {
+            visualizer.stopBubbleFlag = 1;
+        }
+    }
+
+    class ContinueThread extends Thread {
+        public void run() {
+            visualizer.stopBubbleFlag = 0;
+            visualizer.resume();
+        }
+    }
+
+    public BubbleSortFrame() {
         super("Bubble Sort Algorithm Visualizer");
-        threads = new ArrayList<>();
         initializeButtonPanel();
     }
+
 
     @Override
     public void sortButtonClicked(int id) {
@@ -53,10 +43,8 @@ public class BubbleSortFrame extends SortFrame {
                 visualizer.createRandomArray(canvas.getWidth(), canvas.getHeight());
                 break;
             case 1:  // sort button
-            	interruptAllThreads();
                 RunThread runThread = new RunThread();
                 runThread.start();
-                threads.add(runThread);
                 break;
             case 2:  // back button
                 getContentPane().removeAll();
@@ -72,7 +60,7 @@ public class BubbleSortFrame extends SortFrame {
                 ContinueThread continueThread = new ContinueThread();
                 continueThread.start();
                 break;
-            
+
         }
     }
 
