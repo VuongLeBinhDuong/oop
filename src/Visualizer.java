@@ -26,9 +26,12 @@ public class Visualizer
 	private Graphics g;
 
 	private SortedListener listener;
-	private boolean isPaused = false;
-	protected int stopFlag = 0;
-	protected int check = 0;
+
+	protected int stopBubbleFlag = 0;
+	protected int stopInsertionFlag = 0;
+
+	private volatile boolean pausedSelection = false;
+	private final Object lockSelection = new Object();
 	
 
 	public Visualizer(int capacity, int fps, SortedListener listener)
@@ -38,7 +41,7 @@ public class Visualizer
 		this.listener = listener;
 		startTime = time = comp = swapping = 0;
 
-		originalColor = ColorManager.BAR_CYAN;
+		originalColor = ColorManager.BAR_GREEN;
 		comparingColor = Color.YELLOW;
 		swappingColor = ColorManager.BAR_RED;
 
@@ -90,376 +93,48 @@ public class Visualizer
 	// return a color for a bar
 	private Color getBarColor(int value)
 	{
-
 		return ColorManager.BAR_BLUE;
-
 	}
 
 
-	/* BUBBLE SORT */
-	public void bubbleSort() throws InterruptedException {
-	    if (!isCreated()) return;
-
-	    // get graphics
-	    g = bs.getDrawGraphics();
-
-	    // calculate elapsed time
-	    startTime = System.nanoTime();
-	    Sort.bubbleSort(array.clone());
-	    time = System.nanoTime() - startTime;
-
-	    comp = swapping = 0;
-	    int count = 0;
-	    for (int i = array.length - 1; i >= 0; i--) {
-	        count = 0;
-	        for (int j = 0; j < i; j++) {
-	            colorPair(j, j + 1, comparingColor);
-
-	            if (array[j] > array[j + 1]) {
-	                swap(j, j + 1);
-	                count++;
-	                swapping++;
-	            }
-
-	            comp++;  // Check for pause
-	            if (stopFlag == 1) {
-	                handlePause();
-	            } 
-	        }
-
-	        bars[i].setColor(getBarColor(i));
-	        bars[i].draw(g);
-	        bs.show();
-
-	        if (count == 0)  // the array is sorted
-	            break;
-	    }
-	    finishAnimation();
-
-	    g.dispose();
-	}
-	
-	private synchronized void handlePause() throws InterruptedException {
-                wait();
-                redrawBars();  // Redraw bars immediately after resuming
-    }
-
-    public synchronized void pause() {
-        isPaused = true;
-    }
-
-    public synchronized void resume() {
-        notifyAll();
-    }
-    
-    private void redrawBars() {
-        for (int i = 0; i < bars.length; i++) {
-            bars[i].draw(g);
-        }
-        bs.show();
-    }
-
-
-	/* SELECTION SORT */
-	public void selectionSort()
-	{
-		if (!isCreated())
-			return;
-
-		// get graphics
-        g = bs.getDrawGraphics();
-
-		// calculate elapsed time
-		startTime = System.nanoTime();
-		Sort.selectionSort(array.clone());
-		time = System.nanoTime() - startTime;
-
-		comp = swapping = 0;
-		for (int i = array.length-1; i >= 0; i--)
-		{
-			// find the max
-			int max = array[i], index = i;
-			for (int j = 0; j <= i; j++)
-			{
-				if (max < array[j])
-				{
-					max = array[j];
-					index = j;
-				}
-
-				colorPair(index, j, comparingColor);
-				comp++;
-			}
-
-			swap(i, index);
-			swapping++;
-
-			bars[i].setColor(getBarColor(i));
+	private void redrawBars() {
+		for (int i = 0; i < bars.length; i++) {
 			bars[i].draw(g);
-			bs.show();
 		}
-
-		finishAnimation();
-
-		g.dispose();
-	}
-
-
-	/* INSERTION SORT */
-	public void insertionSort()
-	{
-		if (!isCreated())
-			return;
-
-		// gett graphics
-		g = bs.getDrawGraphics();
-
-		// calculate elapsed time
-		startTime = System.nanoTime();
-		Sort.insertionSort(array.clone());
-		time = System.nanoTime() - startTime;
-
-		comp = swapping = 0;
-
-		Bar bar;
-		for (int i = 1; i < array.length; i++)
-		{
-			bars[i].setColor(getBarColor(i));
-
-			// find the insertion location by comparing to its predecessor
-			int index = i-1, element = array[i];
-			while (index >= 0 && element < array[index])
-			{
-				array[index+1] = array[index];
-
-				bar = bars[index+1];
-				bar.clear(g);
-				bar.setValue(bars[index].getValue());
-				colorBar(index+1, swappingColor);
-
-				index--;
-				comp++;
-				swapping++;
-			}
-			comp++;
-
-			index++;
-
-			// insert the element
-			array[index] = element;
-
-			bar = bars[index];
-			bar.clear(g);
-			bar.setValue(element);
-			bar.setColor(getBarColor(index));
-			bar.draw(g);
-
-			bs.show();
-		}
-
-		finishAnimation();
-
-		g.dispose();
-	}
-
-
-	/* QUICK SORT */
-	public void quickSort()
-	{
-		if (!isCreated())
-			return;
-
-		g = bs.getDrawGraphics();
-
-		// calculate elapsed time
-		startTime = System.nanoTime();
-		Sort.quickSort(array.clone());
-		time = System.nanoTime() - startTime;
-
-		comp = swapping = 0;
-
-		quickSort(0, array.length-1);
-
-		finishAnimation();
-		g.dispose();
-	}
-
-
-	// recursive quicksort
-	private void quickSort(int start, int end)
-	{
-		if (start < end)
-		{
-			// place pivot in correct spot
-			int pivot = partition(start, end);
-
-			// coloring
-			bars[pivot].setColor(getBarColor(pivot));
-			bars[pivot].draw(g);
-			bs.show();
-
-			// sort the left half
-			quickSort(start, pivot-1);
-
-			// sort the right half
-			quickSort(pivot+1, end);
-		}
-	}
-
-
-	// quick sort partition
-	private int partition(int start, int end)
-	{
-		// pivot is the last element
-		int pivot = array[end];
-
-		// mark it as pivot
-		Bar bar = bars[end];
-		Color oldColor = bar.getColor();
-		bar.setColor(comparingColor);
-		bar.draw(g);
 		bs.show();
+	}
 
-		int index = start-1;
-		for (int i = start; i < end; i++)
-		{
-			if (array[i] < pivot)
-			{
-				index++;
-				swap(index, i);
-				swapping++;
+	private void checkPaused() throws InterruptedException {
+		synchronized (lockSelection) {
+			while (pausedSelection) {
+				lockSelection.wait();
 			}
-			comp++;
-		}
-
-		bar.setColor(oldColor);
-		bar.draw(g);
-		bs.show();
-
-		// move pivot to correct location
-		index++;
-		swap(index, end);
-		swapping++;
-
-		return index;
-	}
-
-	/* MERGE SORT */
-	public void mergeSort()
-	{
-		if (!isCreated())
-			return;
-
-		g = bs.getDrawGraphics();
-
-		// calculate elapsed time
-		startTime = System.nanoTime();
-		Sort.mergeSort(array.clone());
-		time = System.nanoTime() - startTime;
-
-		comp = swapping = 0;
-
-		mergeSort(0, array.length-1);
-
-		finishAnimation();
-		g.dispose();
-	}
-
-
-	// recursive mergeSort
-	private void mergeSort(int left, int right)
-	{
-		if (left >= right)
-			return;
-
-		// find the middle
-		int middle = (right + left) / 2;
-
-		// sort the left half
-		mergeSort(left, middle);
-
-		// sort the second half
-		mergeSort(middle+1, right);
-
-		// merge them
-		merge(left, middle, right);
-	}
-
-
-	// merge for mergeSort
-	private void merge(int left, int middle, int right)
-	{
-		Color mergeColor = getBarColor(middle);
-
-		// number of items in the first half
-		int n1 = middle - left + 1;
-		int n2 = right - middle;  // second half
-
-		// create array for those parts
-		int[] leftArr = new int[n1];
-		for (int i = 0; i < n1; i++)
-			leftArr[i] = array[left+i];
-
-		int[] rightArr = new int[n2];
-		for (int i = 0; i < n2; i++)
-			rightArr[i] = array[middle+i+1];
-
-		// starting index
-		int l = 0, r = 0, k = left;  // k: for the original array
-
-		// merge
-		while (l < n1 && r < n2)
-		{
-			Bar bar = bars[k];
-			bar.clear(g);
-			if (leftArr[l] < rightArr[r]) {
-				array[k] = leftArr[l];
-				bar.setValue(leftArr[l]);
-				l++;
-			} else {
-				array[k] = rightArr[r];
-				bar.setValue(rightArr[r]);
-				r++;
-			}
-
-			bar.setColor(mergeColor);
-			colorBar(k, swappingColor);
-			k++;
-			comp++;
-			swapping++;
-		}
-
-
-		// add the remaining in the two arrays if there are any
-		while (l < n1)
-		{
-			Bar bar = bars[k];
-			bar.clear(g);
-
-			array[k] = leftArr[l];
-			bar.setValue(leftArr[l]);
-			bar.setColor(mergeColor);
-			colorBar(k, swappingColor);
-			l++;
-			k++;
-			swapping++;
-		}
-
-		while (r < n2)
-		{
-			Bar bar = bars[k];
-			bar.clear(g);
-
-			array[k] = rightArr[r];
-			bar.setValue(rightArr[r]);
-			bar.setColor(mergeColor);
-			colorBar(k, swappingColor);
-			r++;
-			k++;
-			swapping++;
 		}
 	}
 
+	public void pauseSelection() {
+		synchronized (lockSelection) {
+			pausedSelection = true;
+		}
+	}
+
+	public void resumeSelection() {
+		synchronized (lockSelection) {
+			pausedSelection = false;
+			lockSelection.notifyAll();
+		}
+	}
+
+	// handle stop buttons
+	private synchronized void handlePause() throws InterruptedException {
+		wait();
+		redrawBars();  // Redraw bars immediately after resuming
+	}
+
+	// handle continue button
+	public synchronized void resume() {
+		notifyAll();
+	}
 
 	// swap 2 elements given 2 indexes
 	private void swap(int i, int j)
@@ -565,6 +240,394 @@ public class Visualizer
 		g.dispose();
 	}
 
+	/* BUBBLE SORT */
+	public void bubbleSort() throws InterruptedException {
+	    if (!isCreated()) return;
+
+	    // get graphics
+	    g = bs.getDrawGraphics();
+
+	    // calculate elapsed time
+	    startTime = System.nanoTime();
+	    Sort.bubbleSort(array.clone());
+	    time = System.nanoTime() - startTime;
+
+	    comp = swapping = 0;
+	    int count = 0;
+	    for (int i = array.length - 1; i >= 0; i--) {
+	        count = 0;
+	        for (int j = 0; j < i; j++) {
+	            colorPair(j, j + 1, comparingColor);
+
+	            if (array[j] > array[j + 1]) {
+	                swap(j, j + 1);
+	                count++;
+	                swapping++;
+	            }
+
+	            comp++;
+				// Check for pause
+	            if (stopBubbleFlag == 1) {
+	                handlePause();
+	            } 
+	        }
+
+	        bars[i].setColor(getBarColor(i));
+	        bars[i].draw(g);
+	        bs.show();
+
+	        if (count == 0)  // the array is sorted
+	            break;
+	    }
+	    finishAnimation();
+
+	    g.dispose();
+	}
+
+
+	/* SELECTION SORT */
+	public void selectionSort() throws InterruptedException {
+		if (!isCreated())
+			return;
+
+		// get graphics
+        g = bs.getDrawGraphics();
+
+		// calculate elapsed time
+		startTime = System.nanoTime();
+		Sort.selectionSort(array.clone());
+		time = System.nanoTime() - startTime;
+
+		comp = swapping = 0;
+		for (int i = array.length-1; i >= 0; i--)
+		{
+			// find the max
+			int max = array[i], index = i;
+			for (int j = 0; j <= i; j++)
+			{
+				if (max < array[j])
+				{
+					max = array[j];
+					index = j;
+				}
+
+				colorPair(index, j, comparingColor);
+				comp++;
+
+			}
+
+			swap(i, index);
+			swapping++;
+
+			// Check for pause
+			checkPaused();
+
+			bars[i].setColor(getBarColor(i));
+			bars[i].draw(g);
+			bs.show();
+		}
+
+		finishAnimation();
+
+		g.dispose();
+	}
+
+
+
+	/* INSERTION SORT */
+	public void insertionSort() throws InterruptedException {
+		if (!isCreated())
+			return;
+
+		// gett graphics
+		g = bs.getDrawGraphics();
+
+		// calculate elapsed time
+		startTime = System.nanoTime();
+		Sort.insertionSort(array.clone());
+		time = System.nanoTime() - startTime;
+
+		comp = swapping = 0;
+
+		Bar bar;
+		for (int i = 1; i < array.length; i++)
+		{
+			bars[i].setColor(getBarColor(i));
+
+			// find the insertion location by comparing to its predecessor
+			int index = i-1, element = array[i];
+			while (index >= 0 && element < array[index])
+			{
+				array[index+1] = array[index];
+
+				bar = bars[index+1];
+				bar.clear(g);
+				bar.setValue(bars[index].getValue());
+				colorBar(index+1, swappingColor);
+
+				index--;
+				comp++;
+				swapping++;
+
+				// Check for pause
+				if (stopInsertionFlag == 1) {
+                    try {
+                        handlePause();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+			}
+			comp++;
+
+			index++;
+
+			// insert the element
+			array[index] = element;
+
+			bar = bars[index];
+			bar.clear(g);
+			bar.setValue(element);
+			bar.setColor(getBarColor(index));
+			bar.draw(g);
+
+			bs.show();
+		}
+
+		finishAnimation();
+
+		g.dispose();
+	}
+
+
+	/* QUICK SORT */
+	public void quickSort() throws InterruptedException {
+		if (!isCreated())
+			return;
+
+		g = bs.getDrawGraphics();
+
+		// calculate elapsed time
+		startTime = System.nanoTime();
+		Sort.quickSort(array.clone());
+		time = System.nanoTime() - startTime;
+
+		comp = swapping = 0;
+
+		quickSort(0, array.length-1);
+
+		finishAnimation();
+		g.dispose();
+	}
+
+
+	// recursive quicksort
+	private void quickSort(int start, int end) throws InterruptedException {
+		if (start < end)
+		{
+			// place pivot in correct spot
+			int pivot = partition(start, end);
+
+			// coloring
+			bars[pivot].setColor(getBarColor(pivot));
+			bars[pivot].draw(g);
+			bs.show();
+
+			// sort the left half
+			quickSort(start, pivot-1);
+
+			// sort the right half
+			quickSort(pivot+1, end);
+		}
+	}
+
+
+	// quick sort partition
+	private int partition(int start, int end) throws InterruptedException {
+		// pivot is the last element
+		int pivot = array[end];
+
+		// mark it as pivot
+		Bar bar = bars[end];
+		Color oldColor = bar.getColor();
+		bar.setColor(comparingColor);
+		bar.draw(g);
+		bs.show();
+
+		int index = start-1;
+		for (int i = start; i < end; i++)
+		{
+			if (array[i] < pivot)
+			{
+				index++;
+				swap(index, i);
+				swapping++;
+
+				// Check for pause
+                try {
+                    checkPaused();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+			comp++;
+		}
+
+		bar.setColor(oldColor);
+		bar.draw(g);
+		bs.show();
+
+		// move pivot to correct location
+		index++;
+		swap(index, end);
+		swapping++;
+
+		// Check for pause
+		try {
+			checkPaused();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+
+		return index;
+	}
+
+	/* MERGE SORT */
+	public void mergeSort() throws InterruptedException {
+		if (!isCreated())
+			return;
+
+		g = bs.getDrawGraphics();
+
+		// calculate elapsed time
+		startTime = System.nanoTime();
+		Sort.mergeSort(array.clone());
+		time = System.nanoTime() - startTime;
+
+		comp = swapping = 0;
+
+		mergeSort(0, array.length-1);
+
+		finishAnimation();
+		g.dispose();
+	}
+
+
+	// recursive mergeSort
+	private void mergeSort(int left, int right) throws InterruptedException {
+		if (left >= right)
+			return;
+
+		// find the middle
+		int middle = (right + left) / 2;
+
+		// sort the left half
+		mergeSort(left, middle);
+
+		// sort the second half
+		mergeSort(middle+1, right);
+
+		// merge them
+        try {
+            merge(left, middle, right);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+	// merge for mergeSort
+	private void merge(int left, int middle, int right) throws InterruptedException {
+		Color mergeColor = getBarColor(middle);
+
+		// number of items in the first half
+		int n1 = middle - left + 1;
+		int n2 = right - middle;  // second half
+
+		// create array for those parts
+		int[] leftArr = new int[n1];
+		for (int i = 0; i < n1; i++)
+			leftArr[i] = array[left+i];
+
+		int[] rightArr = new int[n2];
+		for (int i = 0; i < n2; i++)
+			rightArr[i] = array[middle+i+1];
+
+		// starting index
+		int l = 0, r = 0, k = left;  // k: for the original array
+
+		// merge
+		while (l < n1 && r < n2)
+		{
+			Bar bar = bars[k];
+			bar.clear(g);
+			if (leftArr[l] < rightArr[r]) {
+				array[k] = leftArr[l];
+				bar.setValue(leftArr[l]);
+				l++;
+			} else {
+				array[k] = rightArr[r];
+				bar.setValue(rightArr[r]);
+				r++;
+			}
+
+			bar.setColor(mergeColor);
+			colorBar(k, swappingColor);
+			k++;
+			comp++;
+			swapping++;
+
+			// Check for pause
+            try {
+                checkPaused();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+
+		// add the remaining in the two arrays if there are any
+		while (l < n1)
+		{
+			Bar bar = bars[k];
+			bar.clear(g);
+
+			array[k] = leftArr[l];
+			bar.setValue(leftArr[l]);
+			bar.setColor(mergeColor);
+			colorBar(k, swappingColor);
+			l++;
+			k++;
+			swapping++;
+
+			try {
+				checkPaused();
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		while (r < n2)
+		{
+			Bar bar = bars[k];
+			bar.clear(g);
+
+			array[k] = rightArr[r];
+			bar.setValue(rightArr[r]);
+			bar.setColor(mergeColor);
+			colorBar(k, swappingColor);
+			r++;
+			k++;
+			swapping++;
+
+			try {
+				checkPaused();
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
 	/* SHELL SORT */
 	public void shellSort() throws InterruptedException {
 		if (!isCreated()) return;
@@ -583,27 +646,39 @@ public class Visualizer
 			for (int i = gap; i < n; i++) {
 				int temp = array[i];
 				int j;
-				for (j = i; j >= gap && array[j - gap] > temp; j -= gap) {
-					colorPair(j, j - gap, comparingColor);
 
+				for (j = i; j >= gap && array[j - gap] > temp; j -= gap) {
+
+					// Tô màu các thanh đang so sánh
+					colorPair(j, i, comparingColor);
 					array[j] = array[j - gap];
+
+					// Xóa và cập nhật giá trị của thanh
 					bars[j].clear(g);
 					bars[j].setValue(bars[j - gap].getValue());
-					colorBar(j, swappingColor);
+//					bars[j].setColor(swappingColor);
+//					bars[i].setColor(swappingColor);
+
+					bars[j].draw(g);
+
+					bs.show();
 
 					swapping++;
 					comp++;
+
+					// Check for pause
+					checkPaused();
+
+
 				}
 				array[j] = temp;
+
 				bars[j].clear(g);
 				bars[j].setValue(temp);
 				bars[j].setColor(getBarColor(j));
 				bars[j].draw(g);
-
-				if (stopFlag == 1) {
-					handlePause();
-				}
 				bs.show();
+
 			}
 		}
 
