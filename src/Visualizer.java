@@ -54,91 +54,89 @@ public class Visualizer
 	}
 
 
-	public void createRandomArrayDuplicates(int canvasWidth, int canvasHeight)
-	{
-		array = new Integer[capacity];
-		bars = new Bar[capacity];
-		hasArray = true;
-
-		// initial position
-		double x = PADDING;
-		int y = canvasHeight- PADDING;
-
-		// width of all bars
-		double width = (double) (canvasWidth - PADDING*2) / capacity;
-
-		// get graphics
-		g = bs.getDrawGraphics();
-		g.setColor(ColorManager.CANVAS_BACKGROUND);
-		g.fillRect(0, 0, canvasWidth, canvasHeight);
-
-		Random rand = new Random();
-		int value;
-		Bar bar;
-		for (int i = 0; i < array.length; i++)
-		{
-			value = rand.nextInt(MAX_BAR_HEIGHT) + MIN_BAR_HEIGHT;
-			array[i] = value;
-
-			bar = new Bar((int)x, y, (int) width, value, originalColor);
-			bar.draw(g);
-			bars[i] = bar;
-
-			// move to the next bar
-			x += width;
-		}
-
-		bs.show();
-		g.dispose();
-	}
 
 	public void createRandomArray(int canvasWidth, int canvasHeight) {
-		array = new Integer[capacity];
-		bars = new Bar[capacity];
-		hasArray = true;
+        array = new Integer[capacity];
+        bars = new Bar[capacity];
+        hasArray = true;
 
-		// initial position
-		double x = PADDING;
-		int y = canvasHeight - PADDING;
+        // initial position
+        double x = PADDING;
+        int y = canvasHeight - PADDING;
 
-		// width of all bars
-		double width = (double) (canvasWidth - PADDING * 2) / capacity;
+        // width of all bars
+        double width = (double) (canvasWidth - PADDING * 2) / capacity;
 
-		// get graphics
-		g = bs.getDrawGraphics();
-		g.setColor(ColorManager.CANVAS_BACKGROUND);
-		g.fillRect(0, 0, canvasWidth, canvasHeight);
+        // get graphics
+        g = bs.getDrawGraphics();
+        g.setColor(ColorManager.CANVAS_BACKGROUND);
+        g.fillRect(0, 0, canvasWidth, canvasHeight);
 
-		// Kiểm tra nếu phạm vi giá trị nhỏ hơn số lượng phần tử cần tạo
-		if (MAX_BAR_HEIGHT - MIN_BAR_HEIGHT + 1 < capacity) {
-			JOptionPane.showMessageDialog(null, "Phạm vi giá trị không đủ lớn để tạo ra mảng với các giá trị khác nhau!", "Error", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
+        // Kiểm tra nếu phạm vi giá trị nhỏ hơn số lượng phần tử cần tạo
+        if (MAX_BAR_HEIGHT - MIN_BAR_HEIGHT + 1 < capacity) {
+            JOptionPane.showMessageDialog(null, "Phạm vi giá trị không đủ lớn để tạo ra mảng với các giá trị khác nhau!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-		// Tạo danh sách các giá trị từ MIN_BAR_HEIGHT đến MAX_BAR_HEIGHT
-		List<Integer> values = new ArrayList<>();
-		for (int i = MIN_BAR_HEIGHT; i <= MAX_BAR_HEIGHT; i++) {
-			values.add(i);
-		}
+        // Tạo danh sách các giá trị từ MIN_BAR_HEIGHT đến MAX_BAR_HEIGHT
+        List<Integer> values = new ArrayList<>();
+        for (int i = MIN_BAR_HEIGHT; i <= MAX_BAR_HEIGHT; i++) {
+            values.add(i);
+        }
 
-		// Shuffle để ngẫu nhiên hóa thứ tự các giá trị
-		Collections.shuffle(values);
+        // Shuffle để ngẫu nhiên hóa thứ tự các giá trị
+        Collections.shuffle(values);
 
-		// Chọn `capacity` giá trị đầu tiên từ danh sách đã xáo trộn
-		for (int i = 0; i < capacity; i++) {
-			array[i] = values.get(i);
+        // Chọn `capacity` giá trị đầu tiên từ danh sách đã xáo trộn
+        for (int i = 0; i < capacity; i++) {
+            array[i] = values.get(i);
 
-			Bar bar = new Bar((int) x, y, (int) width, array[i], originalColor);
-			bar.draw(g);
-			bars[i] = bar;
+            Bar bar = new Bar((int) x, y, (int) width, array[i], originalColor);
+            bar.draw(g);
+            bars[i] = bar;
 
-			// move to the next bar
-			x += width;
-		}
+            // move to the next bar
+            x += width;
+        }
 
-		bs.show();
-		g.dispose();
-	}
+        bs.show();
+        g.dispose();
+    }
+
+    // Phương thức từ nhánh 'thaihung' nếu cần giữ lại logic tạo mảng với các giá trị trùng lặp
+    public void createRandomArrayDuplicates(int canvasWidth, int canvasHeight) {
+        array = new Integer[capacity];
+        bars = new Bar[capacity];
+        hasArray = true;
+
+        // initial position
+        double x = PADDING;
+        int y = canvasHeight - PADDING;
+
+        // width of all bars
+        double width = (double) (canvasWidth - PADDING * 2) / capacity;
+
+        // get graphics
+        g = bs.getDrawGraphics();
+        g.setColor(ColorManager.CANVAS_BACKGROUND);
+        g.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        Random rand = new Random();
+        for (int i = 0; i < capacity; i++) {
+            int value = rand.nextInt(MAX_BAR_HEIGHT - MIN_BAR_HEIGHT + 1) + MIN_BAR_HEIGHT;
+            array[i] = value;
+
+            Bar bar = new Bar((int) x, y, (int) width, value, originalColor);
+            bar.draw(g);
+            bars[i] = bar;
+
+            // move to the next bar
+            x += width;
+        }
+
+        bs.show();
+        g.dispose();
+    }
 
 
 	// return a color for a bar
