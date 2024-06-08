@@ -1,4 +1,3 @@
-
 import javax.swing.JOptionPane;
 import java.awt.image.BufferStrategy;
 import java.awt.Color;
@@ -32,6 +31,17 @@ public class Visualizer
 
 	private volatile boolean pausedSelection = false;
 	private final Object lockSelection = new Object();
+
+	private volatile boolean sorting = false;
+	private boolean arrayCreated = false;
+
+	public synchronized boolean isSorting() {
+		return sorting;
+	}
+
+	public synchronized boolean isArrayCreated() {
+		return arrayCreated;
+	}
 	
 
 	public Visualizer(int capacity, int fps, SortedListener listener)
@@ -87,6 +97,8 @@ public class Visualizer
 
 		bs.show();
 		g.dispose();
+
+		arrayCreated = true;
 	}
 
 
@@ -241,7 +253,7 @@ public class Visualizer
 	}
 
 	/* BUBBLE SORT */
-	public void bubbleSort() throws InterruptedException {
+	public synchronized void bubbleSort() throws InterruptedException {
 	    if (!isCreated()) return;
 
 	    // get graphics
@@ -282,6 +294,8 @@ public class Visualizer
 	    finishAnimation();
 
 	    g.dispose();
+
+		sorting = false;
 	}
 
 

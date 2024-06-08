@@ -41,11 +41,14 @@ public class BubbleSortFrame extends SortFrame {
     public void sortButtonClicked(int id) {
         switch (id) {
             case 0:  // create button
+
                 visualizer.createRandomArray(canvas.getWidth(), canvas.getHeight());
+
                 break;
             case 1:  // sort button
-                RunThread runThread = new RunThread();
-                runThread.start();
+
+                    RunThread runThread = new RunThread();
+                    runThread.start();
                 break;
             case 2:  // back button
                 getContentPane().removeAll();
@@ -61,9 +64,9 @@ public class BubbleSortFrame extends SortFrame {
                 ContinueThread continueThread = new ContinueThread();
                 continueThread.start();
                 break;
-            
         }
     }
+
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
