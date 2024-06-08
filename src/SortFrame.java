@@ -2,6 +2,8 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
@@ -27,7 +29,7 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
     protected JSlider fpsSlider;
     protected MyCanvas canvas;
     protected Visualizer visualizer;
-
+    protected boolean isChecked;
 
     public SortFrame(String title) {
         super(title);
@@ -43,9 +45,6 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
 
         setSize(screenWidth, screenHeight);
 
-        System.out.println(screenWidth);
-        System.out.println(screenHeight);
-
         setLocationRelativeTo(null);
         setResizable(false);
         setBackground(Color.WHITE);
@@ -57,14 +56,9 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION);
+                int choice = JOptionPane.showConfirmDialog(SortFrame.this, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION);
                 if (choice == JOptionPane.YES_OPTION) {
                     System.exit(0);
-                } else {
-                    // Clear all components and recreate a new MainMenu instance
-                    getContentPane().removeAll();
-                    getContentPane().repaint();
-                    new MainMenu();
                 }
             }
         });
@@ -90,23 +84,10 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         buttonPanel = new ButtonPanel(this);
         int y = (int)(0.14*screenHeight);
         int width = (int)(0.16*screenWidth);
-        buttonPanel.setBounds(0, y, width, HEIGHT);
+        buttonPanel.setBounds(0, y, width, screenHeight);
         buttonPanel.setBackground(ColorManager.BACKGROUND);
         mainPanel.add(buttonPanel);
     }
-
-//    protected void initializeCanvas() {
-//        canvas = new MyCanvas(this);
-//        int cWidth = WIDTH - 300;
-//        int cHeight = HEIGHT - 100;
-//        canvas.setFocusable(false);
-//        canvas.setMaximumSize(new Dimension(cWidth, cHeight));
-//        canvas.setMinimumSize(new Dimension(cWidth, cHeight));
-//        canvas.setPreferredSize(new Dimension(cWidth, cHeight));
-//        canvas.setBounds(350, 100, cWidth, cHeight);
-//        mainPanel.add(canvas);
-//        pack();
-//    }
 
     protected void initializeCanvas() {
         canvas = new MyCanvas(this);
@@ -127,18 +108,21 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
     }
 
     protected void initializeInputPanel() {
+        // Create the capacity label
         capacityLabel = new JLabel("Capacity");
         capacityLabel.setForeground(ColorManager.TEXT);
         capacityLabel.setFont(new Font(null, Font.BOLD, 15));
 
+        // Formatter for the capacity input field
         NumberFormat format = NumberFormat.getNumberInstance();
         MyFormatter formatter = new MyFormatter(format);
         formatter.setValueClass(Integer.class);
         formatter.setMinimum(0);
-        formatter.setMaximum(200);
+        formatter.setMaximum(400);
         formatter.setAllowsInvalid(false);
         formatter.setCommitsOnValidEdit(true);
 
+        // Capacity input field setup
         capacityField = new JFormattedTextField(formatter);
         capacityField.setValue(CAPACITY);
         capacityField.setColumns(3);
@@ -149,15 +133,40 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         capacityField.setBorder(BorderFactory.createLineBorder(ColorManager.FIELD_BORDER, 1));
         capacityField.addPropertyChangeListener("value", this);
 
+        // Associate the label with the input field
         capacityLabel.setLabelFor(capacityField);
 
-        inputPanel = new JPanel(new GridLayout(1, 0));
-        inputPanel.add(capacityLabel);
-        inputPanel.add(capacityField);
+        // Create the "Different Value" checkbox
+        JCheckBox differentValueCheckbox = new JCheckBox("Unique Value Array");
+        differentValueCheckbox.setFont(new Font(null, Font.PLAIN, 15));
+        differentValueCheckbox.setForeground(ColorManager.TEXT);
+        differentValueCheckbox.setBackground(ColorManager.BACKGROUND);
+        differentValueCheckbox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                isChecked = (e.getStateChange() == ItemEvent.SELECTED);
+            }
+        });
+
+        // Panel to hold the capacity label, input field, and checkbox in a row
+        JPanel inputRowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        inputRowPanel.setBackground(ColorManager.BACKGROUND);
+        inputRowPanel.add(capacityLabel);
+        inputRowPanel.add(capacityField);
+        inputRowPanel.add(differentValueCheckbox);
+
+        // Outer panel to position inputRowPanel properly within the main panel
+        inputPanel = new JPanel();
+        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
+        inputPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         inputPanel.setBackground(ColorManager.BACKGROUND);
-        inputPanel.setBounds((int)(0.015*screenWidth), (int)(0.019*screenHeight), (int)(0.1*screenWidth), (int)(0.028*screenHeight));
+        inputPanel.add(inputRowPanel);
+
+        // Maintain the existing size constraints and positioning
+        inputPanel.setBounds((int) (0.015 * screenWidth), (int) (0.018 * screenHeight), (int) (0.25 * screenWidth), (int) (0.05 * screenHeight));
         mainPanel.add(inputPanel);
     }
+
 
     protected void initializeSliderPanel() {
         fpsLabel = new JLabel("Frames Per Second");
@@ -166,7 +175,7 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         fpsLabel.setForeground(ColorManager.TEXT);
         fpsLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        fpsSlider = new JSlider(JSlider.HORIZONTAL, 50, 350, FPS);
+        fpsSlider = new JSlider(JSlider.HORIZONTAL, 50, 450, FPS);
         fpsSlider.setMajorTickSpacing(100);
         fpsSlider.setMinorTickSpacing(20);
         fpsSlider.setPaintTicks(true);
@@ -217,6 +226,10 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         inforPanel.setBackground(ColorManager.BACKGROUND);
         inforPanel.setBounds((int)(0.4*screenWidth), (int)(0.05*screenHeight), (int)(0.5*screenWidth), (int)(0.018*screenHeight));
         mainPanel.add(inforPanel);
+    }
+
+    public boolean isChecked() {
+        return isChecked;
     }
 
     @Override

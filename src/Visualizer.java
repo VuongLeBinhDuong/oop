@@ -1,8 +1,12 @@
+
 import javax.swing.JOptionPane;
 import java.awt.image.BufferStrategy;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -32,17 +36,6 @@ public class Visualizer
 	private volatile boolean pausedSelection = false;
 	private final Object lockSelection = new Object();
 
-	private volatile boolean sorting = false;
-	private boolean arrayCreated = false;
-
-	public synchronized boolean isSorting() {
-		return sorting;
-	}
-
-	public synchronized boolean isArrayCreated() {
-		return arrayCreated;
-	}
-	
 
 	public Visualizer(int capacity, int fps, SortedListener listener)
 	{
@@ -61,7 +54,7 @@ public class Visualizer
 	}
 
 
-	public void createRandomArray(int canvasWidth, int canvasHeight)
+	public void createRandomArrayDuplicates(int canvasWidth, int canvasHeight)
 	{
 		array = new Integer[capacity];
 		bars = new Bar[capacity];
@@ -75,7 +68,7 @@ public class Visualizer
 		double width = (double) (canvasWidth - PADDING*2) / capacity;
 
 		// get graphics
-        g = bs.getDrawGraphics();
+		g = bs.getDrawGraphics();
 		g.setColor(ColorManager.CANVAS_BACKGROUND);
 		g.fillRect(0, 0, canvasWidth, canvasHeight);
 
@@ -97,8 +90,54 @@ public class Visualizer
 
 		bs.show();
 		g.dispose();
+	}
 
-		arrayCreated = true;
+	public void createRandomArray(int canvasWidth, int canvasHeight) {
+		array = new Integer[capacity];
+		bars = new Bar[capacity];
+		hasArray = true;
+
+		// initial position
+		double x = PADDING;
+		int y = canvasHeight - PADDING;
+
+		// width of all bars
+		double width = (double) (canvasWidth - PADDING * 2) / capacity;
+
+		// get graphics
+		g = bs.getDrawGraphics();
+		g.setColor(ColorManager.CANVAS_BACKGROUND);
+		g.fillRect(0, 0, canvasWidth, canvasHeight);
+
+		// Kiểm tra nếu phạm vi giá trị nhỏ hơn số lượng phần tử cần tạo
+		if (MAX_BAR_HEIGHT - MIN_BAR_HEIGHT + 1 < capacity) {
+			JOptionPane.showMessageDialog(null, "Phạm vi giá trị không đủ lớn để tạo ra mảng với các giá trị khác nhau!", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		// Tạo danh sách các giá trị từ MIN_BAR_HEIGHT đến MAX_BAR_HEIGHT
+		List<Integer> values = new ArrayList<>();
+		for (int i = MIN_BAR_HEIGHT; i <= MAX_BAR_HEIGHT; i++) {
+			values.add(i);
+		}
+
+		// Shuffle để ngẫu nhiên hóa thứ tự các giá trị
+		Collections.shuffle(values);
+
+		// Chọn `capacity` giá trị đầu tiên từ danh sách đã xáo trộn
+		for (int i = 0; i < capacity; i++) {
+			array[i] = values.get(i);
+
+			Bar bar = new Bar((int) x, y, (int) width, array[i], originalColor);
+			bar.draw(g);
+			bars[i] = bar;
+
+			// move to the next bar
+			x += width;
+		}
+
+		bs.show();
+		g.dispose();
 	}
 
 
@@ -253,49 +292,47 @@ public class Visualizer
 	}
 
 	/* BUBBLE SORT */
-	public synchronized void bubbleSort() throws InterruptedException {
-	    if (!isCreated()) return;
+	public void bubbleSort() throws InterruptedException {
+		if (!isCreated()) return;
 
-	    // get graphics
-	    g = bs.getDrawGraphics();
+		// get graphics
+		g = bs.getDrawGraphics();
 
-	    // calculate elapsed time
-	    startTime = System.nanoTime();
-	    Sort.bubbleSort(array.clone());
-	    time = System.nanoTime() - startTime;
+		// calculate elapsed time
+		startTime = System.nanoTime();
+		Sort.bubbleSort(array.clone());
+		time = System.nanoTime() - startTime;
 
-	    comp = swapping = 0;
-	    int count = 0;
-	    for (int i = array.length - 1; i >= 0; i--) {
-	        count = 0;
-	        for (int j = 0; j < i; j++) {
-	            colorPair(j, j + 1, comparingColor);
+		comp = swapping = 0;
+		int count = 0;
+		for (int i = array.length - 1; i >= 0; i--) {
+			count = 0;
+			for (int j = 0; j < i; j++) {
+				colorPair(j, j + 1, comparingColor);
 
-	            if (array[j] > array[j + 1]) {
-	                swap(j, j + 1);
-	                count++;
-	                swapping++;
-	            }
+				if (array[j] > array[j + 1]) {
+					swap(j, j + 1);
+					count++;
+					swapping++;
+				}
 
-	            comp++;
+				comp++;
 				// Check for pause
-	            if (stopBubbleFlag == 1) {
-	                handlePause();
-	            } 
-	        }
+				if (stopBubbleFlag == 1) {
+					handlePause();
+				}
+			}
 
-	        bars[i].setColor(getBarColor(i));
-	        bars[i].draw(g);
-	        bs.show();
+			bars[i].setColor(getBarColor(i));
+			bars[i].draw(g);
+			bs.show();
 
-	        if (count == 0)  // the array is sorted
-	            break;
-	    }
-	    finishAnimation();
+			if (count == 0)  // the array is sorted
+				break;
+		}
+		finishAnimation();
 
-	    g.dispose();
-
-		sorting = false;
+		g.dispose();
 	}
 
 
@@ -305,7 +342,7 @@ public class Visualizer
 			return;
 
 		// get graphics
-        g = bs.getDrawGraphics();
+		g = bs.getDrawGraphics();
 
 		// calculate elapsed time
 		startTime = System.nanoTime();
@@ -324,10 +361,8 @@ public class Visualizer
 					max = array[j];
 					index = j;
 				}
-
 				colorPair(index, j, comparingColor);
 				comp++;
-
 			}
 
 			swap(i, index);
@@ -385,12 +420,12 @@ public class Visualizer
 
 				// Check for pause
 				if (stopInsertionFlag == 1) {
-                    try {
-                        handlePause();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+					try {
+						handlePause();
+					} catch (InterruptedException e) {
+						throw new RuntimeException(e);
+					}
+				}
 			}
 			comp++;
 
@@ -478,12 +513,12 @@ public class Visualizer
 				swapping++;
 
 				// Check for pause
-                try {
-                    checkPaused();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+				try {
+					checkPaused();
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+			}
 			comp++;
 		}
 
@@ -542,12 +577,12 @@ public class Visualizer
 		mergeSort(middle+1, right);
 
 		// merge them
-        try {
-            merge(left, middle, right);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+		try {
+			merge(left, middle, right);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 
 	// merge for mergeSort
@@ -592,12 +627,12 @@ public class Visualizer
 			swapping++;
 
 			// Check for pause
-            try {
-                checkPaused();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
+			try {
+				checkPaused();
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		}
 
 
 		// add the remaining in the two arrays if there are any
@@ -662,7 +697,6 @@ public class Visualizer
 				int j;
 
 				for (j = i; j >= gap && array[j - gap] > temp; j -= gap) {
-
 					// Tô màu các thanh đang so sánh
 					colorPair(j, i, comparingColor);
 					array[j] = array[j - gap];
@@ -670,29 +704,22 @@ public class Visualizer
 					// Xóa và cập nhật giá trị của thanh
 					bars[j].clear(g);
 					bars[j].setValue(bars[j - gap].getValue());
-//					bars[j].setColor(swappingColor);
-//					bars[i].setColor(swappingColor);
-
 					bars[j].draw(g);
 
 					bs.show();
-
 					swapping++;
 					comp++;
 
 					// Check for pause
 					checkPaused();
-
-
 				}
-				array[j] = temp;
 
+				array[j] = temp;
 				bars[j].clear(g);
 				bars[j].setValue(temp);
 				bars[j].setColor(getBarColor(j));
 				bars[j].draw(g);
 				bs.show();
-
 			}
 		}
 

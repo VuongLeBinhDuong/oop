@@ -1,15 +1,13 @@
-
-
 import java.awt.EventQueue;
 
 public class InsertionSortFrame extends SortFrame {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public InsertionSortFrame() {
+    public InsertionSortFrame() {
         super("Insertion Sort Algorithm Visualizer");
         initializeButtonPanel();
     }
@@ -39,9 +37,15 @@ public class InsertionSortFrame extends SortFrame {
 
     @Override
     public void sortButtonClicked(int id) {
+        boolean isCheck = isChecked();
         switch (id) {
             case 0:  // create button
-                visualizer.createRandomArray(canvas.getWidth(), canvas.getHeight());
+                if (isCheck){
+                    visualizer.createRandomArray(canvas.getWidth(), canvas.getHeight());
+                }
+                else {
+                    visualizer.createRandomArrayDuplicates(canvas.getWidth(), canvas.getHeight());
+                }
                 break;
             case 1:  // sort button
                 RunThread runThread = new RunThread();
