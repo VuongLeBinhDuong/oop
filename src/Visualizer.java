@@ -30,7 +30,6 @@ public class Visualizer
 	protected int stopBubbleFlag = 0;
 	protected int stopInsertionFlag = 0;
 
-
 	private volatile boolean pausedSelection = false;
 	private final Object lockSelection = new Object();
 	
@@ -38,7 +37,7 @@ public class Visualizer
 	public Visualizer(int capacity, int fps, SortedListener listener)
 	{
 		this.capacity = capacity;
-		this.speed = (int) (100000.0/fps);
+		this.speed = (int) (1000.0/fps);
 		this.listener = listener;
 		startTime = time = comp = swapping = 0;
 
@@ -98,6 +97,149 @@ public class Visualizer
 	}
 
 
+	private void redrawBars() {
+		for (int i = 0; i < bars.length; i++) {
+			bars[i].draw(g);
+		}
+		bs.show();
+	}
+
+	private void checkPaused() throws InterruptedException {
+		synchronized (lockSelection) {
+			while (pausedSelection) {
+				lockSelection.wait();
+			}
+		}
+	}
+
+	public void pauseSelection() {
+		synchronized (lockSelection) {
+			pausedSelection = true;
+		}
+	}
+
+	public void resumeSelection() {
+		synchronized (lockSelection) {
+			pausedSelection = false;
+			lockSelection.notifyAll();
+		}
+	}
+
+	// handle stop buttons
+	private synchronized void handlePause() throws InterruptedException {
+		wait();
+		redrawBars();  // Redraw bars immediately after resuming
+	}
+
+	// handle continue button
+	public synchronized void resume() {
+		notifyAll();
+	}
+
+	// swap 2 elements given 2 indexes
+	private void swap(int i, int j)
+	{
+		// swap the elements
+		int temp = array[j];
+		array[j] = array[i];
+		array[i] = temp;
+
+		// clear the bar
+		bars[i].clear(g);
+		bars[j].clear(g);
+
+		// swap the drawings
+		bars[j].setValue(bars[i].getValue());
+		bars[i].setValue(temp);
+
+		colorPair(i, j, swappingColor);
+	}
+
+
+	private void colorPair(int i, int j, Color color)
+	{
+		Color color1 = bars[i].getColor(), color2 = bars[j].getColor();
+		// drawing
+		bars[i].setColor(color);
+		bars[i].draw(g);
+
+		bars[j].setColor(color);
+		bars[j].draw(g);
+
+		bs.show();
+
+		// delay
+		try {
+			TimeUnit.MILLISECONDS.sleep(speed);
+		} catch (Exception ex) {}
+
+		// put back to original color
+		bars[i].setColor(color1);
+		bars[i].draw(g);
+
+		bars[j].setColor(color2);
+		bars[j].draw(g);
+
+		bs.show();
+	}
+
+
+	// color the bar in speed time and put it
+	// back to its original color
+	private void colorBar(int index, Color color)
+	{
+		Bar bar = bars[index];
+		Color oldColor = bar.getColor();
+
+		bar.setColor(color);
+		bar.draw(g);
+		bs.show();
+
+		try {
+			TimeUnit.MILLISECONDS.sleep(speed);
+		} catch (Exception ex) {}
+
+		bar.setColor(oldColor);
+		bar.draw(g);
+
+		bs.show();
+	}
+
+
+	// swiping effect when the sorting is finished
+	private void finishAnimation()
+	{
+		// swiping to green
+		for (int i = 0; i < bars.length; i++)
+		{
+			colorBar(i, comparingColor);
+			bars[i].setColor(getBarColor(i));
+			bars[i].draw(g);
+			bs.show();
+		}
+
+		// show elapsed time and comparisons
+		listener.onArraySorted(time, comp, swapping);
+	}
+
+
+	// for restore purpose
+	public void drawArray()
+	{
+		if (!hasArray)
+			return;
+
+		g = bs.getDrawGraphics();
+
+		for (int i = 0; i < bars.length; i++)
+		{
+			bars[i].draw(g);
+		}
+
+		bs.show();
+		g.dispose();
+	}
+
 	/* BUBBLE SORT */
 	public void bubbleSort() throws InterruptedException {
 	    if (!isCreated()) return;
@@ -141,15 +283,6 @@ public class Visualizer
 
 	    g.dispose();
 	}
-	
-
-    
-    private void redrawBars() {
-        for (int i = 0; i < bars.length; i++) {
-            bars[i].draw(g);
-        }
-        bs.show();
-    }
 
 
 	/* SELECTION SORT */
@@ -181,7 +314,6 @@ public class Visualizer
 				colorPair(index, j, comparingColor);
 				comp++;
 
-
 			}
 
 			swap(i, index);
@@ -200,26 +332,6 @@ public class Visualizer
 		g.dispose();
 	}
 
-	private void checkPaused() throws InterruptedException {
-		synchronized (lockSelection) {
-			while (pausedSelection) {
-				lockSelection.wait();
-			}
-		}
-	}
-
-	public void pauseSelection() {
-		synchronized (lockSelection) {
-			pausedSelection = true;
-		}
-	}
-
-	public void resumeSelection() {
-		synchronized (lockSelection) {
-			pausedSelection = false;
-			lockSelection.notifyAll();
-		}
-	}
 
 
 	/* INSERTION SORT */
@@ -516,111 +628,6 @@ public class Visualizer
 		}
 	}
 
-
-	// swap 2 elements given 2 indexes
-	private void swap(int i, int j)
-	{
-		// swap the elements
-		int temp = array[j];
-		array[j] = array[i];
-		array[i] = temp;
-
-		// clear the bar
-		bars[i].clear(g);
-		bars[j].clear(g);
-
-		// swap the drawings
-		bars[j].setValue(bars[i].getValue());
-		bars[i].setValue(temp);
-
-		colorPair(i, j, swappingColor);
-	}
-
-
-	private void colorPair(int i, int j, Color color)
-	{
-		Color color1 = bars[i].getColor(), color2 = bars[j].getColor();
-		// drawing
-		bars[i].setColor(color);
-		bars[i].draw(g);
-
-		bars[j].setColor(color);
-		bars[j].draw(g);
-
-		bs.show();
-
-		// delay
-		try {
-			TimeUnit.MILLISECONDS.sleep(speed);
-		} catch (Exception ex) {}
-
-		// put back to original color
-		bars[i].setColor(color1);
-		bars[i].draw(g);
-
-		bars[j].setColor(color2);
-		bars[j].draw(g);
-
-		bs.show();
-	}
-
-
-	// color the bar in speed time and put it
-	// back to its original color
-	private void colorBar(int index, Color color)
-	{
-		Bar bar = bars[index];
-		Color oldColor = bar.getColor();
-
-		bar.setColor(color);
-		bar.draw(g);
-		bs.show();
-
-		try {
-			TimeUnit.MILLISECONDS.sleep(speed);
-		} catch (Exception ex) {}
-
-		bar.setColor(oldColor);
-		bar.draw(g);
-
-		bs.show();
-	}
-
-
-	// swiping effect when the sorting is finished
-	private void finishAnimation()
-	{
-		// swiping to green
-		for (int i = 0; i < bars.length; i++)
-		{
-			colorBar(i, comparingColor);
-			bars[i].setColor(getBarColor(i));
-			bars[i].draw(g);
-			bs.show();
-		}
-
-		// show elapsed time and comparisons
-		listener.onArraySorted(time, comp, swapping);
-	}
-
-
-	// for restore purpose
-	public void drawArray()
-	{
-		if (!hasArray)
-			return;
-
-		g = bs.getDrawGraphics();
-
-		for (int i = 0; i < bars.length; i++)
-		{
-			bars[i].draw(g);
-		}
-
-		bs.show();
-		g.dispose();
-	}
-
 	/* SHELL SORT */
 	public void shellSort() throws InterruptedException {
 		if (!isCreated()) return;
@@ -639,22 +646,30 @@ public class Visualizer
 			for (int i = gap; i < n; i++) {
 				int temp = array[i];
 				int j;
-				for (j = i; j >= gap && array[j - gap] > temp; j -= gap) {
-					// Tô màu các thanh đang so sánh
-					colorPair(j, j - gap, comparingColor);
 
+				for (j = i; j >= gap && array[j - gap] > temp; j -= gap) {
+
+					// Tô màu các thanh đang so sánh
+					colorPair(j, i, comparingColor);
 					array[j] = array[j - gap];
 
 					// Xóa và cập nhật giá trị của thanh
 					bars[j].clear(g);
 					bars[j].setValue(bars[j - gap].getValue());
-					bars[j].setColor(swappingColor);
+//					bars[j].setColor(swappingColor);
+//					bars[i].setColor(swappingColor);
+
 					bars[j].draw(g);
 
 					bs.show();
 
 					swapping++;
 					comp++;
+
+					// Check for pause
+					checkPaused();
+
+
 				}
 				array[j] = temp;
 
@@ -664,26 +679,11 @@ public class Visualizer
 				bars[j].draw(g);
 				bs.show();
 
-				// Kiểm tra tạm dừng
-				if (stopBubbleFlag == 1) {
-					handlePause();
-				}
 			}
 		}
 
 		finishAnimation();
 		g.dispose();
-	}
-
-	// handle stop buttons
-	private synchronized void handlePause() throws InterruptedException {
-		wait();
-		redrawBars();  // Redraw bars immediately after resuming
-	}
-
-	// handle continue button
-	public synchronized void resume() {
-		notifyAll();
 	}
 
 
