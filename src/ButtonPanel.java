@@ -9,7 +9,7 @@ public class ButtonPanel extends JPanel
 {
 	public static final long serialVersionUID = 1L;
 	private static final int BUTTON_WIDTH = 200, BUTTON_HEIGHT = 120;
-	private JLabel[] buttons;
+	protected JLabel[] buttons;
 	private SortButtonListener listener;
 	private int number = 5;
 
