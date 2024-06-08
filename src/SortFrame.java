@@ -137,7 +137,7 @@ public abstract class SortFrame extends JFrame implements PropertyChangeListener
         capacityLabel.setLabelFor(capacityField);
 
         // Create the "Different Value" checkbox
-        JCheckBox differentValueCheckbox = new JCheckBox("Different Value");
+        JCheckBox differentValueCheckbox = new JCheckBox("Unique Value Array");
         differentValueCheckbox.setFont(new Font(null, Font.PLAIN, 15));
         differentValueCheckbox.setForeground(ColorManager.TEXT);
         differentValueCheckbox.setBackground(ColorManager.BACKGROUND);
