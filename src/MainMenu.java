@@ -23,6 +23,8 @@ public class MainMenu extends JFrame {
     public static final int CAPACITY = 50, FPS = 100;
     private JPanel center;
     private String selected;
+    public static int screenWidth;
+    public static int screenHeight;
     public static void main(String[] args)
     {
         new MainMenu();
@@ -34,8 +36,10 @@ public class MainMenu extends JFrame {
         this.center = createCenter();
         cp.add(center, BorderLayout.CENTER);
         setTitle("Sorting Visualization");
-
-        setSize(800, 600);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        screenWidth = screenSize.width;
+        screenHeight = screenSize.height;
+        setSize(screenWidth, screenHeight);
 
         setLocationRelativeTo(null);
         setResizable(false);
@@ -53,26 +57,14 @@ public class MainMenu extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION);
+                int choice = JOptionPane.showConfirmDialog(MainMenu.this, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION);
                 if (choice == JOptionPane.YES_OPTION) {
                     System.exit(0);
-                } else {
-                    // Clear all components and recreate a new MainMenu instance
-                    getContentPane().removeAll();
-                    getContentPane().repaint();
-                    new MainMenu();
                 }
             }
         });
 
-        // Enter fullscreen mode
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        if (gd.isFullScreenSupported()) {
-            gd.setFullScreenWindow(this);
-        }
     }
-
-
 
     public void createMainMenu() {
         // Clear existing components from the center container
@@ -85,46 +77,75 @@ public class MainMenu extends JFrame {
         GridBagConstraints gbcTitle = new GridBagConstraints();
         gbcTitle.gridx = 0;
         gbcTitle.gridy = 0;
-        gbcTitle.insets = new Insets(20, 0, 30, 0);
+        gbcTitle.insets = new Insets(20, 0, 5, 0); // Reduced bottom inset
 
         JLabel title = new JLabel("Sorting Visualization");
-        title.setFont(new Font("Arial", Font.BOLD, 40));
+        title.setFont(new Font("Arial", Font.BOLD, 60));
         titlePanel.add(title, gbcTitle);
 
-        // Create a JPanel to hold the introduction text, prompt label, and combo box
+        // Create a JPanel to hold the introduction text
         JPanel selectionPanel = new JPanel(new GridBagLayout());
         selectionPanel.setBackground(Color.WHITE);
 
         GridBagConstraints gbcSelection = new GridBagConstraints();
         gbcSelection.gridx = 0;
         gbcSelection.gridy = 0;
-        gbcSelection.insets = new Insets(30, 0, 10, 0);
+        gbcSelection.insets = new Insets(5, 20, 10, 20); // Adjust insets to add padding on left and right and reduced top inset
+        gbcSelection.fill = GridBagConstraints.BOTH; // Ensure the component expands both horizontally and vertically
+        gbcSelection.weightx = 1.0; // Ensure the introductionLabel expands horizontally
+        gbcSelection.weighty = 1.0; // Ensure the introductionLabel expands vertically
 
-        JLabel introductionLabel = new JLabel("<html>Welcome to Sorting Visualization Tool!<br><br>"
-                + "Sorting is an essential concept in computer science and algorithms.<br>"
-                + "With this tool, you can visualize various sorting algorithms in action.<br>"
-                + "Observe how each algorithm rearranges elements to achieve the final sorted order.<br>"
-                + "Select a sorting algorithm from the list below and click Submit to begin.<br><br>"
-                + "Enjoy exploring the fascinating world of sorting algorithms!</html>");
+        JLabel introductionLabel = new JLabel("<html>" +
+                "Sorting algorithms are used to sort a data structure according to a specific order relationship, such as numerical order or lexicographical order.<br><br>" +
+                "This operation is one of the most important and widespread in computer science. For a long time, new methods have been developed to make this procedure faster and faster.<br><br>" +
+                "There are currently hundreds of different sorting algorithms, each with its own specific characteristics. They are classified according to two metrics: space complexity and time complexity.<br><br>" +
+                "Those two kinds of complexity are represented with asymptotic notations, mainly with the symbols O, Θ, Ω, representing respectively the upper bound, the tight bound, and the lower bound of the algorithm's complexity, specifying in brackets an expression in terms of n, the number of the elements of the data structure.<br><br>" +
+                "Most of them fall into two categories:<br><br>" +
+                "<b>Logarithmic:</b><br>" +
+                "<ul>" +
+                "<li>The complexity is proportional to the binary logarithm (i.e., to the base 2) of n.</li>" +
+                "<li>An example of a logarithmic sorting algorithm is Quick sort, with space and time complexity O(n × log n).</li>" +
+                "</ul><br>" +
+                "<b>Quadratic:</b><br>" +
+                "<ul>" +
+                "<li>The complexity is proportional to the square of n.</li>" +
+                "<li>An example of a quadratic sorting algorithm is Bubble sort, with a time complexity of O(n<sup>2</sup>).</li>" +
+                "</ul><br>" +
+                "Space and time complexity can also be further subdivided into 3 different cases: best case, average case, and worst case.<br><br>" +
+                "Sorting algorithms can be difficult to understand, and it's easy to get confused. We believe visualizing sorting algorithms can be a great way to better understand their functioning while having fun!" +
+                "</html>");
+
         introductionLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         selectionPanel.add(introductionLabel, gbcSelection);
 
         gbcSelection.gridy++;
+        gbcSelection.weightx = 0; // Reset weightx for subsequent components
+        gbcSelection.weighty = 0; // Reset weighty for subsequent components
+        gbcSelection.fill = GridBagConstraints.HORIZONTAL; // Fill horizontally for subsequent components
+
+        // Create a new JPanel to hold the prompt label, combo box, and button
+        JPanel promptPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbcPrompt = new GridBagConstraints();
+        gbcPrompt.gridx = 0;
+        gbcPrompt.gridy = 0;
+        gbcPrompt.insets = new Insets(10, 0, 10, 10); // Adjust insets as needed
+
         JLabel promptLabel = new JLabel("Please select a sorting algorithm:");
         promptLabel.setFont(new Font("Arial", Font.PLAIN, 18));
-        selectionPanel.add(promptLabel, gbcSelection);
+        promptPanel.add(promptLabel, gbcPrompt);
 
-        gbcSelection.gridy++;
-        gbcSelection.insets = new Insets(0, 0, 70, 0);
+        gbcPrompt.gridx++;
+        gbcPrompt.insets = new Insets(10, 10, 10, 10); // Adjust insets as needed
+
         JComboBox<String> sortComboBox = new JComboBox<>();
-        sortComboBox.addItem("Bubble");
-        sortComboBox.addItem("Selection");
-        sortComboBox.addItem("Insertion");
-        sortComboBox.addItem("Quick");
-        sortComboBox.addItem("Merge");
-        sortComboBox.addItem("Shell");
-        sortComboBox.setPreferredSize(new Dimension(300, 30));
-        selectionPanel.add(sortComboBox, gbcSelection);
+        sortComboBox.addItem("Bubble Sort");
+        sortComboBox.addItem("Selection Sort");
+        sortComboBox.addItem("Insertion Sort");
+        sortComboBox.addItem("Quick Sort");
+        sortComboBox.addItem("Merge Sort");
+        sortComboBox.addItem("Shell Sort");
+        sortComboBox.setPreferredSize(new Dimension(150, 30)); // Set smaller width
+        promptPanel.add(sortComboBox, gbcPrompt);
         sortComboBox.setSelectedIndex(-1); // No item selected initially
 
         sortComboBox.addActionListener(new ActionListener() {
@@ -135,51 +156,41 @@ public class MainMenu extends JFrame {
             }
         });
 
-        // Create a JPanel to hold the button
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
-        buttonPanel.setBackground(Color.WHITE);
-
-        GridBagConstraints gbcButton = new GridBagConstraints();
-        gbcButton.gridx = 0;
-        gbcButton.gridy = 0;
-        gbcButton.insets = new Insets(30, 0, 30, 0);
+        gbcPrompt.gridx++;
+        gbcPrompt.insets = new Insets(10, 0, 10, 0); // Adjust insets as needed
 
         JButton button = new JButton("Submit");
-        button.setPreferredSize(new Dimension(100, 40));
+        button.setPreferredSize(new Dimension(100, 30)); // Align height with combo box
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (selected == null){
-                    JOptionPane.showMessageDialog(null, "Choose a type of sort before submit");
-                    getContentPane().removeAll();
-                    getContentPane().repaint();
-                    new MainMenu();
-                }
-                else {
+                if (selected == null) {
+                    JOptionPane.showMessageDialog(MainMenu.this, "Choose a type of sort before submit");
+                } else {
                     getContentPane().removeAll();
                     getContentPane().repaint();
                     switch (selected) {
-                        case "Bubble":
+                        case "Bubble Sort":
                             new BubbleSortFrame().setVisible(true);
                             setVisible(false); // Hide the main menu
                             break;
-                        case "Selection":
+                        case "Selection Sort":
                             new SelectionSortFrame().setVisible(true);
                             setVisible(false); // Hide the main menu
                             break;
-                        case "Insertion":
+                        case "Insertion Sort":
                             new InsertionSortFrame().setVisible(true);
                             setVisible(false); // Hide the main menu
                             break;
-                        case "Quick":
+                        case "Quick Sort":
                             new QuickSortFrame().setVisible(true);
                             setVisible(false); // Hide the main menu
                             break;
-                        case "Merge":
+                        case "Merge Sort":
                             new MergeSortFrame().setVisible(true);
                             setVisible(false); // Hide the main menu
                             break;
-                        case "Shell":
+                        case "Shell Sort":
                             new ShellSortFrame().setVisible(true);
                             setVisible(false); // Hide the main menu
                             break;
@@ -191,30 +202,32 @@ public class MainMenu extends JFrame {
                 center.repaint();
             }
         });
-        buttonPanel.add(button, gbcButton);
+        promptPanel.add(button, gbcPrompt);
+
+        // Add the promptPanel to the selectionPanel
+        selectionPanel.add(promptPanel, gbcSelection);
 
         // Add the panels to the center container with vertical spacing
         center.setLayout(new GridBagLayout());
         GridBagConstraints gbcCenter = new GridBagConstraints();
         gbcCenter.gridx = 0;
         gbcCenter.gridy = 0;
-        gbcCenter.fill = GridBagConstraints.HORIZONTAL;
+        gbcCenter.fill = GridBagConstraints.BOTH; // Fill both horizontally and vertically
         gbcCenter.anchor = GridBagConstraints.CENTER;
         gbcCenter.insets = new Insets(10, 10, 10, 10);
+        gbcCenter.weightx = 1.0;
+        gbcCenter.weighty = 1.0;
 
         center.add(titlePanel, gbcCenter);
 
         gbcCenter.gridy++;
         center.add(selectionPanel, gbcCenter);
 
-        gbcCenter.gridy++;
-        center.add(buttonPanel, gbcCenter);
-
         // Revalidate and repaint the center container
         center.revalidate();
         center.repaint();
-
     }
+
 
 
     JPanel createCenter() {
@@ -361,14 +374,20 @@ public class MainMenu extends JFrame {
         JTextArea helpText = new JTextArea();
         helpText.setText("Welcome to Sorting Visualization!\n\n"
                 + "This application provides an interactive platform for visualizing various sorting algorithms in action. "
-                + "Here are the steps to use this visualization:\n\n"
-                + "1. Choose a sorting algorithm from the drop-down menu.\n"
-                + "2. Click the 'Submit' button to start the visualization.\n"
-                + "3. Observe the sorting process as the algorithm sorts the data.\n\n"
-                + "You can visualize popular sorting algorithms such as Bubble Sort, Selection Sort, Insertion Sort, Quick Sort, and Merge Sort. "
-                + "Understanding sorting algorithms visually can enhance your comprehension and analysis of their performance.");
+                + "Here are the detailed steps and functionalities available in this visualization tool:\n\n"
+                + "1. **Choose a sorting algorithm:** Select from popular sorting algorithms like Bubble Sort, Selection Sort, "
+                + "Insertion Sort, Quick Sort, and Merge Sort from the drop-down menu.\n"
+                + "2. **Create an array:** Click the 'Create Array' button to generate a random array of data that you can sort. "
+                + "You can adjust the size of the array and the range of numbers using the input fields provided.\n"
+                + "3. **Start sorting:** Once an array is created, press the 'Sort' button to start the visualization of the sorting process. "
+                + "The array elements will be animated to illustrate how the algorithm sorts the data step-by-step.\n"
+                + "4. **Pause/Continue:** If you need to closely observe or analyze a particular step, you can pause the visualization at any time by clicking the 'Pause' button. "
+                + "Click 'Continue' to resume the sorting process.\n"
+                + "5. **Adjust speed:** Use the slider to adjust the speed of the sorting visualization. Slowing down the animation can help in understanding more complex algorithms.\n\n"
+                + "Understanding sorting algorithms visually can significantly enhance your comprehension and analysis of their performance and efficiency. "
+                + "Use this tool to explore and learn the characteristics of different sorting algorithms in a dynamic and interactive environment.");
 
-        helpText.setFont(new Font("Arial", Font.PLAIN, 14)); // Increased font size
+        helpText.setFont(new Font("Arial", Font.PLAIN, 14)); // Consistent font styling
         helpText.setEditable(false);
         helpText.setLineWrap(true);
         helpText.setWrapStyleWord(true);
@@ -384,6 +403,7 @@ public class MainMenu extends JFrame {
         center.repaint();
     }
 
+
     public void createAbout() {
         center.removeAll();
 
@@ -396,7 +416,7 @@ public class MainMenu extends JFrame {
                 + "Developed using Java Swing, it offers a user-friendly interface to visualize the step-by-step execution "
                 + "of popular sorting algorithms. By observing the sorting process in real-time, users can gain insights into "
                 + "algorithmic efficiency and performance. Sorting algorithms included in this visualization are Bubble Sort, "
-                + "Selection Sort, Insertion Sort, Quick Sort, and Merge Sort.");
+                + "Selection Sort, Insertion Sort, Quick Sort, Merge Sort and Shell Sort.");
 
         aboutText.setFont(new Font("Arial", Font.PLAIN, 14)); // Increased font size
         aboutText.setEditable(false);
@@ -639,6 +659,12 @@ public class MainMenu extends JFrame {
         contentPanel.add(infoText1, gbc); // Add editor pane to content panel
 
         JScrollPane mainScrollPane = new JScrollPane(contentPanel);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                mainScrollPane.getViewport().setViewPosition( new Point(0, 0) );
+            }
+        });
         mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         mainScrollPane.setBackground(Color.WHITE); // Set background color of the main scroll pane
 
