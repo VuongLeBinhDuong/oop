@@ -416,7 +416,7 @@ public class MainMenu extends JFrame {
                 + "Developed using Java Swing, it offers a user-friendly interface to visualize the step-by-step execution "
                 + "of popular sorting algorithms. By observing the sorting process in real-time, users can gain insights into "
                 + "algorithmic efficiency and performance. Sorting algorithms included in this visualization are Bubble Sort, "
-                + "Selection Sort, Insertion Sort, Quick Sort, and Merge Sort.");
+                + "Selection Sort, Insertion Sort, Quick Sort, Merge Sort and Shell Sort.");
 
         aboutText.setFont(new Font("Arial", Font.PLAIN, 14)); // Increased font size
         aboutText.setEditable(false);
@@ -659,6 +659,12 @@ public class MainMenu extends JFrame {
         contentPanel.add(infoText1, gbc); // Add editor pane to content panel
 
         JScrollPane mainScrollPane = new JScrollPane(contentPanel);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                mainScrollPane.getViewport().setViewPosition( new Point(0, 0) );
+            }
+        });
         mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         mainScrollPane.setBackground(Color.WHITE); // Set background color of the main scroll pane
 
