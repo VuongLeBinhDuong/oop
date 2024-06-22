@@ -75,6 +75,8 @@ In sorting frame after choosing sorting algorithm, you can:
 - Adjust Speed: Control the animation speed to see the sorting process more clearly.  
 - Dataset Size: Enter the number of elements in the list to be sorted.  
 - Results: View the colapsed time, the number of swaps and comparisons of the sorting algorithm.
+- Compare the results of 6 types of sort.
+- Create array: random or enter each array element.
 
 ![](src/screenshot/sorting_frame.png)
 
