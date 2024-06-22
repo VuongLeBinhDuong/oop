@@ -4,16 +4,13 @@ import java.awt.image.BufferStrategy;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Visualizer
 {
-	private static final int PADDING = 20;
-	private static final int MAX_BAR_HEIGHT = 350, MIN_BAR_HEIGHT = 30;
+	private static final int PADDING = 10;
+	private static final int MAX_BAR_HEIGHT = 500, MIN_BAR_HEIGHT = 30;
 	private Integer[] array;
 	private int capacity, speed;
 	private Bar[] bars;
@@ -53,6 +50,309 @@ public class Visualizer
 		hasArray = false;
 	}
 
+	public void enterArrayManually(int canvasWidth, int canvasHeight) {
+		array = new Integer[capacity];
+		bars = new Bar[capacity];
+		hasArray = true;
+
+		// Initial position
+		double x = PADDING;
+		int y = canvasHeight - PADDING;
+
+		// Width of all bars
+		double width = (double) (canvasWidth - PADDING * 2) / capacity;
+
+		// Prompt the user to enter values
+		String input = JOptionPane.showInputDialog(null,
+				"Enter " + capacity + " integers separated by spaces:",
+				"Enter Array",
+				JOptionPane.PLAIN_MESSAGE);
+
+		// If the user cancels or inputs nothing, exit the function
+		if (input == null || input.trim().isEmpty()) {
+			JOptionPane.showMessageDialog(null,
+					"No input provided. Operation canceled.",
+					"Input Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		// Split the input string into individual numbers
+		StringTokenizer tokenizer = new StringTokenizer(input);
+		if (tokenizer.countTokens() != capacity) {
+			JOptionPane.showMessageDialog(null,
+					"Please enter exactly " + capacity + " integers.",
+					"Input Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		// Get graphics
+		g = bs.getDrawGraphics();
+		g.setColor(ColorManager.CANVAS_BACKGROUND);
+		g.fillRect(0, 0, canvasWidth, canvasHeight);
+
+		// Parse the input values
+		try {
+			for (int i = 0; i < capacity; i++) {
+				int value = Integer.parseInt(tokenizer.nextToken().trim());
+
+				// Ensure the value is within the valid range
+				if (value < MIN_BAR_HEIGHT || value > MAX_BAR_HEIGHT) {
+					throw new NumberFormatException("Value out of range.");
+				}
+
+				array[i] = value;
+
+				Bar bar = new Bar((int) x, y, (int) width, value, originalColor);
+				bar.draw(g);
+				bars[i] = bar;
+
+				// Move to the next bar
+				x += width;
+			}
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(null,
+					"Invalid input. Please enter integers between " +
+							MIN_BAR_HEIGHT + " and " + MAX_BAR_HEIGHT + ".",
+					"Input Error",
+					JOptionPane.ERROR_MESSAGE);
+			hasArray = false;
+			return;
+		}
+
+		bs.show();
+		g.dispose();
+	}
+
+	public void displaySortStatistics() throws InterruptedException {
+		if (!isCreated()) return;
+
+		// Arrays to hold the statistics
+		long[] sortTimes = new long[6];
+		int[] comparisons = new int[6];
+		int[] swaps = new int[6];
+		String[] sortNames = {"Bubble Sort", "Selection Sort", "Insertion Sort", "Quick Sort", "Merge Sort", "Shell Sort"};
+
+		// Perform each sort and collect statistics
+		for (int i = 0; i < 6; i++) {
+			// Make a deep copy of the original array
+			Integer[] tempArray = array.clone();
+			// Reset counters
+			comp = swapping = 0;
+
+			// Choose the sorting method
+			switch (i) {
+				case 0:
+					startTime = System.nanoTime();
+					bubbleSortInternal(tempArray);
+					sortTimes[i] = System.nanoTime() - startTime;
+					break;
+				case 1:
+					startTime = System.nanoTime();
+					selectionSortInternal(tempArray);
+					sortTimes[i] = System.nanoTime() - startTime;
+					break;
+				case 2:
+					startTime = System.nanoTime();
+					insertionSortInternal(tempArray);
+					sortTimes[i] = System.nanoTime() - startTime;
+					break;
+				case 3:
+					startTime = System.nanoTime();
+					quickSortInternal(tempArray);
+					sortTimes[i] = System.nanoTime() - startTime;
+					break;
+				case 4:
+					startTime = System.nanoTime();
+					mergeSortInternal(tempArray);
+					sortTimes[i] = System.nanoTime() - startTime;
+					break;
+				case 5:
+					startTime = System.nanoTime();
+					shellSortInternal(tempArray);
+					sortTimes[i] = System.nanoTime() - startTime;
+					break;
+			}
+
+			// Record comparisons and swaps
+			comparisons[i] = comp;
+			swaps[i] = swapping;
+		}
+
+		StringBuilder result = new StringBuilder();
+		result.append("<html><body><h2>Sorting Statistics</h2>");
+		result.append("<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">");
+		result.append("<tr><th>Sort Algorithm</th><th>Time (µs)</th><th>Comparisons</th><th>Swaps</th></tr>");
+
+		for (int i = 0; i < 6; i++) {
+			// Convert nanoTime to microseconds (10^-6 seconds)
+			long timeMicros = TimeUnit.NANOSECONDS.toMicros(sortTimes[i]);
+			result.append(String.format("<tr><td>%s</td><td>%d</td><td>%d</td><td>%d</td></tr>",
+					sortNames[i],
+					timeMicros,
+					comparisons[i],
+					swaps[i]));
+		}
+
+		result.append("</table></body></html>");
+
+		// Display the results in a dialog box
+		JOptionPane.showMessageDialog(null, result.toString(), "Sort Statistics", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+
+	private void bubbleSortInternal(Integer[] array) {
+		// Bubble sort implementation for statistics collection
+		for (int i = array.length - 1; i >= 0; i--) {
+			int count = 0;
+			for (int j = 0; j < i; j++) {
+				if (array[j] > array[j + 1]) {
+					// Swap elements
+					int temp = array[j];
+					array[j] = array[j + 1];
+					array[j + 1] = temp;
+					count++;
+					swapping++;
+				}
+				comp++;
+			}
+			if (count == 0)  // the array is sorted
+				break;
+		}
+	}
+
+	private void selectionSortInternal(Integer[] array) {
+		// Selection sort implementation for statistics collection
+		for (int i = array.length - 1; i >= 0; i--) {
+			int max = array[i], index = i;
+			for (int j = 0; j <= i; j++) {
+				if (max < array[j]) {
+					max = array[j];
+					index = j;
+				}
+				comp++;
+			}
+			int temp = array[i];
+			array[i] = array[index];
+			array[index] = temp;
+			swapping++;
+		}
+	}
+
+	private void insertionSortInternal(Integer[] array) {
+		// Insertion sort implementation for statistics collection
+		for (int i = 1; i < array.length; i++) {
+			int index = i - 1, element = array[i];
+			while (index >= 0 && element < array[index]) {
+				array[index + 1] = array[index];
+				index--;
+				comp++;
+				swapping++;
+			}
+			comp++;
+			array[index + 1] = element;
+		}
+	}
+
+	private void quickSortInternal(Integer[] array) throws InterruptedException {
+		// Quick sort implementation for statistics collection
+		quickSortInternal(array, 0, array.length - 1);
+	}
+
+	private void quickSortInternal(Integer[] array, int start, int end) {
+		if (start < end) {
+			int pivot = partition(array, start, end);
+			quickSortInternal(array, start, pivot - 1);
+			quickSortInternal(array, pivot + 1, end);
+		}
+	}
+
+	private int partition(Integer[] array, int start, int end) {
+		int pivot = array[end];
+		int index = start - 1;
+		for (int i = start; i < end; i++) {
+			if (array[i] < pivot) {
+				index++;
+				int temp = array[index];
+				array[index] = array[i];
+				array[i] = temp;
+				swapping++;
+			}
+			comp++;
+		}
+		int temp = array[index + 1];
+		array[index + 1] = array[end];
+		array[end] = temp;
+		swapping++;
+		return index + 1;
+	}
+
+	private void mergeSortInternal(Integer[] array) throws InterruptedException {
+		// Merge sort implementation for statistics collection
+		mergeSortInternal(array, 0, array.length - 1);
+	}
+
+	private void mergeSortInternal(Integer[] array, int left, int right) {
+		if (left < right) {
+			int middle = (left + right) / 2;
+			mergeSortInternal(array, left, middle);
+			mergeSortInternal(array, middle + 1, right);
+			merge(array, left, middle, right);
+		}
+	}
+
+	private void merge(Integer[] array, int left, int middle, int right) {
+		int n1 = middle - left + 1;
+		int n2 = right - middle;
+		Integer[] leftArr = new Integer[n1];
+		Integer[] rightArr = new Integer[n2];
+		System.arraycopy(array, left, leftArr, 0, n1);
+		System.arraycopy(array, middle + 1, rightArr, 0, n2);
+
+		int l = 0, r = 0, k = left;
+		while (l < n1 && r < n2) {
+			if (leftArr[l] <= rightArr[r]) {
+				array[k] = leftArr[l];
+				l++;
+			} else {
+				array[k] = rightArr[r];
+				r++;
+			}
+			k++;
+			comp++;
+			swapping++;
+		}
+		while (l < n1) {
+			array[k] = leftArr[l];
+			l++;
+			k++;
+			swapping++;
+		}
+		while (r < n2) {
+			array[k] = rightArr[r];
+			r++;
+			k++;
+			swapping++;
+		}
+	}
+
+	private void shellSortInternal(Integer[] array) {
+		// Shell sort implementation for statistics collection
+		int n = array.length;
+		for (int gap = n / 2; gap > 0; gap /= 2) {
+			for (int i = gap; i < n; i++) {
+				int temp = array[i];
+				int j;
+				for (j = i; j >= gap && array[j - gap] > temp; j -= gap) {
+					array[j] = array[j - gap];
+					swapping++;
+					comp++;
+				}
+				array[j] = temp;
+			}
+		}
+	}
 
 
 	public void createRandomArray(int canvasWidth, int canvasHeight) {

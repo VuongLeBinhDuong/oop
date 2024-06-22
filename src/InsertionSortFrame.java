@@ -65,6 +65,16 @@ public class InsertionSortFrame extends SortFrame {
                 ContinueThread continueThread = new ContinueThread();
                 continueThread.start();
                 break;
+            case 5:
+                visualizer.enterArrayManually(canvas.getWidth(), canvas.getHeight());
+                break;
+            case 6:
+                try {
+                    visualizer.displaySortStatistics();  // Show the statistics of different sorts
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
     }
 

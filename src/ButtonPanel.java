@@ -8,10 +8,10 @@ import java.awt.event.MouseEvent;
 public class ButtonPanel extends JPanel
 {
 	public static final long serialVersionUID = 1L;
-	private static final int BUTTON_WIDTH = 200, BUTTON_HEIGHT = 120;
+	private static final int BUTTON_WIDTH = 200, BUTTON_HEIGHT = 110;
 	protected JLabel[] buttons;
 	private SortButtonListener listener;
-	private int number = 5;
+	private int number = 7;
 
 	public ButtonPanel(SortButtonListener listener)
 	{
@@ -32,12 +32,12 @@ public class ButtonPanel extends JPanel
 //		else if (sort_type.equals("quick")) initButtons(buttons[1], "quick_button", 1);
 //		else if (sort_type.equals("insertion")) initButtons(buttons[1], "insertion_button", 1);
 //		else if (sort_type.equals("shell")) initButtons(buttons[1], "shell_button", 1);
-		
 
-		initButtons(buttons[2], "stop_button", 3);
-		initButtons(buttons[3], "continue_button", 4);
-		initButtons(buttons[4], "back_button", 2);
-
+		initButtons(buttons[3], "stop_button", 3);
+		initButtons(buttons[4], "continue_button", 4);
+		initButtons(buttons[6], "back_button", 2);
+		initButtons(buttons[2], "enter_array_button", 5);
+		initButtons(buttons[5], "compare_button", 6);
 		// add button to the panel
 		setLayout(null);
 		for (int i = 0; i < buttons.length; i++)

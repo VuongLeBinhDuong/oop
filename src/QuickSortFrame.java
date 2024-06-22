@@ -1,12 +1,8 @@
 
 import java.awt.EventQueue;
+import java.io.IOException;
 
 public class QuickSortFrame extends SortFrame {
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
 
     public QuickSortFrame() {
         super("Quick Sort Algorithm Visualizer");
@@ -64,6 +60,16 @@ public class QuickSortFrame extends SortFrame {
             case 4:  // continue button
                 ContinueThread continueThread = new ContinueThread();
                 continueThread.start();
+                break;
+            case 5:
+                visualizer.enterArrayManually(canvas.getWidth(), canvas.getHeight());
+                break;
+            case 6:
+                try {
+                    visualizer.displaySortStatistics();  // Show the statistics of different sorts
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }
