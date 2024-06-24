@@ -46,6 +46,7 @@ public class MainMenu extends JFrame {
         setBackground(Color.WHITE);
 
         // Create and set the menu bar
+
         createMenuBar();
         createMainMenu();
 
@@ -375,19 +376,43 @@ public class MainMenu extends JFrame {
         helpText.setText("Welcome to Sorting Visualization!\n\n"
                 + "This application provides an interactive platform for visualizing various sorting algorithms in action. "
                 + "Here are the detailed steps and functionalities available in this visualization tool:\n\n"
-                + "1. **Choose a sorting algorithm:** Select from popular sorting algorithms like Bubble Sort, Selection Sort, "
-                + "Insertion Sort, Quick Sort, and Merge Sort from the drop-down menu.\n"
-                + "2. **Create an array:** Click the 'Create Array' button to generate a random array of data that you can sort. "
-                + "You can adjust the size of the array and the range of numbers using the input fields provided.\n"
-                + "3. **Start sorting:** Once an array is created, press the 'Sort' button to start the visualization of the sorting process. "
-                + "The array elements will be animated to illustrate how the algorithm sorts the data step-by-step.\n"
-                + "4. **Pause/Continue:** If you need to closely observe or analyze a particular step, you can pause the visualization at any time by clicking the 'Pause' button. "
-                + "Click 'Continue' to resume the sorting process.\n"
-                + "5. **Adjust speed:** Use the slider to adjust the speed of the sorting visualization. Slowing down the animation can help in understanding more complex algorithms.\n\n"
+                + "1. **Choose a sorting algorithm:**\n"
+                + "   Select from a range of popular sorting algorithms including:\n"
+                + "   - Bubble Sort: A simple, but inefficient, sorting algorithm that repeatedly steps through the list to be sorted.\n"
+                + "   - Selection Sort: A comparison-based algorithm that divides the list into a sorted and an unsorted region.\n"
+                + "   - Insertion Sort: Efficient for small data sets and adaptive to the structure of the input data.\n"
+                + "   - Quick Sort: A highly efficient sorting algorithm that uses divide-and-conquer.\n"
+                + "   - Merge Sort: An efficient, stable, comparison-based, divide-and-conquer sorting algorithm.\n"
+                + "   - Shell Sort: An extension of Insertion Sort that allows the exchange of items that are far apart.\n\n"
+                + "2. **Create an array:**\n"
+                + "   Click the 'Create Array' button to generate a random array of data that you can sort. "
+                + "   You can customize the size of the array and the range of the numbers using the provided input fields.\n"
+                + "   - Size: Adjust the number of elements in the array.\n"
+                + "   - Range: Define the minimum and maximum values for the elements in the array.\n\n"
+                + "3. **Enter an array:**\n"
+                + "   Alternatively, manually enter an array of integers separated by spaces into the input field provided. "
+                + "   Click 'Sort' to visualize the chosen algorithm sorting the entered array.\n\n"
+                + "4. **Compare Algorithms:**\n"
+                + "   Use the 'Compare' button to run each of the selected sorting algorithms on the same randomly generated array. "
+                + "   This feature allows you to compare the performance and efficiency of different sorting algorithms in real-time.\n\n"
+                + "5. **Start sorting:**\n"
+                + "   Once you have created or entered an array, press the 'Sort' button to initiate the sorting visualization. "
+                + "   You will see the array elements animated, showing the step-by-step process of how the algorithm sorts the data.\n\n"
+                + "6. **Pause/Continue:**\n"
+                + "   You can pause the visualization at any time by clicking the 'Pause' button, which is useful for closely analyzing a particular step. "
+                + "   Press 'Continue' to resume the sorting process from where you left off.\n\n"
+                + "7. **Adjust speed:**\n"
+                + "   Use the slider to control the speed of the sorting animation. "
+                + "   Slower speeds can help you understand complex algorithms better by allowing you to observe each step carefully.\n\n"
+                + "8. **Step-by-step Execution:**\n"
+                + "   For deeper analysis, you can step through the sorting process one action at a time. This can be especially useful for educational purposes.\n\n"
+                + "9. **Detailed Algorithm Information:**\n"
+                + "   Hover over each sorting algorithm in the menu to see a brief description and complexity details. "
+                + "   This can help you understand the algorithm's efficiency and suitability for different types of data sets.\n\n"
                 + "Understanding sorting algorithms visually can significantly enhance your comprehension and analysis of their performance and efficiency. "
                 + "Use this tool to explore and learn the characteristics of different sorting algorithms in a dynamic and interactive environment.");
 
-        helpText.setFont(new Font("Arial", Font.PLAIN, 14)); // Consistent font styling
+        helpText.setFont(new Font("Arial", Font.PLAIN, 14));
         helpText.setEditable(false);
         helpText.setLineWrap(true);
         helpText.setWrapStyleWord(true);
@@ -415,10 +440,34 @@ public class MainMenu extends JFrame {
                 + "This project aims to provide an educational tool for understanding sorting algorithms. "
                 + "Developed using Java Swing, it offers a user-friendly interface to visualize the step-by-step execution "
                 + "of popular sorting algorithms. By observing the sorting process in real-time, users can gain insights into "
-                + "algorithmic efficiency and performance. Sorting algorithms included in this visualization are Bubble Sort, "
-                + "Selection Sort, Insertion Sort, Quick Sort, Merge Sort and Shell Sort.");
+                + "algorithmic efficiency and performance.\n\n"
+                + "Key Features:\n"
+                + "1. **Interactive Algorithm Selection:**\n"
+                + "   Choose from a variety of sorting algorithms including Bubble Sort, Selection Sort, Insertion Sort, Quick Sort, Merge Sort, and Shell Sort. "
+                + "   Each algorithm is explained in detail, highlighting its operational mechanics and time complexity.\n\n"
+                + "2. **Customizable Array Generation:**\n"
+                + "   Generate arrays with customizable sizes and number ranges to observe how different algorithms handle varying data sets. "
+                + "   This feature allows users to test the performance and behavior of algorithms on different types of data.\n\n"
+                + "3. **Dynamic Visualization:**\n"
+                + "   Watch the sorting process unfold in real-time with animations that clearly illustrate each algorithm’s approach to sorting. "
+                + "   The visualization aids in understanding the efficiency and flow of each sorting technique.\n\n"
+                + "4. **Speed Control:**\n"
+                + "   Adjust the speed of the sorting visualization to either speed up the process for quicker observations or slow it down for detailed analysis.\n\n"
+                + "5. **Educational Insights:**\n"
+                + "   The tool is designed to be educational, making it perfect for students and enthusiasts looking to deepen their understanding of sorting algorithms. "
+                + "   It also includes detailed explanations and complexity analysis of each sorting method.\n\n"
+                + "6. **Step-by-step Execution:**\n"
+                + "   Pause the animation and step through the sorting process one step at a time to closely examine how algorithms work. "
+                + "   This feature is particularly useful for in-depth learning and analysis.\n\n"
+                + "7. **User Experience:**\n"
+                + "   The interface is designed with usability in mind, ensuring a seamless and intuitive experience for users. "
+                + "   The clear layout and interactive controls make it easy to navigate and use the tool effectively.\n\n"
+                + "Future Enhancements:\n"
+                + "We plan to expand the tool with additional features such as more sorting algorithms, comparative analysis tools, "
+                + "and the ability to visualize the sorting process with different data structures like linked lists and trees.\n\n"
+                + "We hope this project enhances your understanding of sorting algorithms and inspires further exploration in the field of computer science.");
 
-        aboutText.setFont(new Font("Arial", Font.PLAIN, 14)); // Increased font size
+        aboutText.setFont(new Font("Arial", Font.PLAIN, 14));
         aboutText.setEditable(false);
         aboutText.setLineWrap(true);
         aboutText.setWrapStyleWord(true);
@@ -433,6 +482,7 @@ public class MainMenu extends JFrame {
         center.revalidate();
         center.repaint();
     }
+
 
     public void bubbleSortInformation() {
         center.removeAll();

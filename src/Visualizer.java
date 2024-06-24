@@ -134,71 +134,78 @@ public class Visualizer
 		int[] swaps = new int[6];
 		String[] sortNames = {"Bubble Sort", "Selection Sort", "Insertion Sort", "Quick Sort", "Merge Sort", "Shell Sort"};
 
-		// Perform each sort and collect statistics
+		// Get a fresh copy of the array
+		Integer[] originalArray = getArray();
+
+		if (originalArray == null) {
+			JOptionPane.showMessageDialog(null, "Array is not initialized!", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
 		for (int i = 0; i < 6; i++) {
-			// Make a deep copy of the original array
-			Integer[] tempArray = array.clone();
+			// Make a fresh deep copy of the original array for each sort
+			Integer[] tempArray = originalArray.clone();
+
 			// Reset counters
 			comp = swapping = 0;
 
-			// Choose the sorting method
+			// Sort the copy and measure statistics
+			startTime = System.nanoTime();
+
 			switch (i) {
 				case 0:
-					startTime = System.nanoTime();
 					bubbleSortInternal(tempArray);
-					sortTimes[i] = System.nanoTime() - startTime;
 					break;
 				case 1:
-					startTime = System.nanoTime();
 					selectionSortInternal(tempArray);
-					sortTimes[i] = System.nanoTime() - startTime;
 					break;
 				case 2:
-					startTime = System.nanoTime();
 					insertionSortInternal(tempArray);
-					sortTimes[i] = System.nanoTime() - startTime;
 					break;
 				case 3:
-					startTime = System.nanoTime();
 					quickSortInternal(tempArray);
-					sortTimes[i] = System.nanoTime() - startTime;
 					break;
 				case 4:
-					startTime = System.nanoTime();
 					mergeSortInternal(tempArray);
-					sortTimes[i] = System.nanoTime() - startTime;
 					break;
 				case 5:
-					startTime = System.nanoTime();
 					shellSortInternal(tempArray);
-					sortTimes[i] = System.nanoTime() - startTime;
 					break;
 			}
 
-			// Record comparisons and swaps
+			sortTimes[i] = System.nanoTime() - startTime;
 			comparisons[i] = comp;
 			swaps[i] = swapping;
 		}
 
+		// Format the statistics into a table
 		StringBuilder result = new StringBuilder();
-		result.append("<html><body><h2>Sorting Statistics</h2>");
-		result.append("<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">");
-		result.append("<tr><th>Sort Algorithm</th><th>Time (µs)</th><th>Comparisons</th><th>Swaps</th></tr>");
+		result.append("<html><table border=\"1\" style=\"border-collapse: collapse; width: 100%;\">");
+		result.append("<tr style=\"background-color: #f2f2f2;\"><th>Sort Algorithm</th><th>Time (µs)</th><th>Comparisons</th><th>Swaps</th></tr>");
 
 		for (int i = 0; i < 6; i++) {
-			// Convert nanoTime to microseconds (10^-6 seconds)
-			long timeMicros = TimeUnit.NANOSECONDS.toMicros(sortTimes[i]);
 			result.append(String.format("<tr><td>%s</td><td>%d</td><td>%d</td><td>%d</td></tr>",
 					sortNames[i],
-					timeMicros,
+					TimeUnit.NANOSECONDS.toMicros(sortTimes[i]),
 					comparisons[i],
 					swaps[i]));
 		}
 
-		result.append("</table></body></html>");
+		result.append("</table></html>");
 
 		// Display the results in a dialog box
 		JOptionPane.showMessageDialog(null, result.toString(), "Sort Statistics", JOptionPane.INFORMATION_MESSAGE);
+
+		printArray();
+	}
+
+	// Method to get a copy of the current array
+	public Integer[] getArray() {
+		if (array == null) {
+			return null; // or throw an exception, or return an empty array
+		}
+		// Return a copy of the array to avoid exposing internal state
+		return array.clone();
 	}
 
 
@@ -401,6 +408,8 @@ public class Visualizer
 
         bs.show();
         g.dispose();
+
+		printArray();
     }
 
     // Phương thức từ nhánh 'thaihung' nếu cần giữ lại logic tạo mảng với các giá trị trùng lặp
@@ -1032,6 +1041,20 @@ public class Visualizer
 		if (!hasArray)
 			JOptionPane.showMessageDialog(null, "You need to create an array!", "No Array Created Error", JOptionPane.ERROR_MESSAGE);
 		return hasArray;
+	}
+
+	// Method to print the current array to the terminal
+	public void printArray() {
+		if (array == null) {
+			System.out.println("Array is not initialized!");
+			return;
+		}
+		// Print the array elements
+		System.out.print("Current Array: ");
+		for (int element : array) {
+			System.out.print(element + " ");
+		}
+		System.out.println(); // for a new line
 	}
 
 

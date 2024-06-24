@@ -4,11 +4,6 @@ import java.awt.EventQueue;
 
 public class ShellSortFrame extends SortFrame {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
     public ShellSortFrame() {
         super("Shell Sort Algorithm Visualizer");
         initializeButtonPanel();

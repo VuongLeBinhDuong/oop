@@ -4,11 +4,6 @@ import java.awt.EventQueue;
 
 public class SelectionSortFrame extends SortFrame {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
     public SelectionSortFrame() {
         super("Selection Sort Algorithm Visualizer");
         initializeButtonPanel();

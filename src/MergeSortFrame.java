@@ -2,11 +2,6 @@ import java.awt.EventQueue;
 
 public class MergeSortFrame extends SortFrame {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
     public MergeSortFrame() {
         super("Merge Sort Algorithm Visualizer");
         initializeButtonPanel();

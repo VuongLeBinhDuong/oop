@@ -2,11 +2,6 @@ import java.awt.EventQueue;
 
 public class InsertionSortFrame extends SortFrame {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
     public InsertionSortFrame() {
         super("Insertion Sort Algorithm Visualizer");
         initializeButtonPanel();
